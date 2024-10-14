@@ -12,7 +12,7 @@
 /build
 
 # JSONs
-/JSON-examples
+/.JSON-examples
 
 # misc
 /.vscode
