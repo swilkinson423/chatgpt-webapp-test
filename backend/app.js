@@ -80,7 +80,6 @@ app.get('/clients/:id', async (req, res) => {
 // POST Endpoint
 app.post('/clients', async (req, res) => {
 	var { name, website, description, descriptionaddon, products, personas, linkedin, youtube, twitter, facebook, instagram, tiktok } = req.body;
-	// if (name == "") { name = "Unknown" };
 	try {
 		const result = await pool.query(
 			'WITH post_new_client AS (INSERT INTO clients (name, website, description, descriptionaddon, products, personas) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id) INSERT INTO socials (client_id, linkedin, youtube, twitter, facebook, instagram, tiktok) SELECT client.id, $7, $8, $9, $10, $11, $12 FROM post_new_client client',
