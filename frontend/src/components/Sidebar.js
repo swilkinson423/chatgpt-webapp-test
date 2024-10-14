@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from 'react';
+import axios from 'axios';
 
 import { SharedStateContext } from './_SharedStateComponent';
 
@@ -8,54 +9,52 @@ import { ReactComponent as AddClient } from "./../assets/person-fill-add.svg"
 
 export default function Sidebar() {
 
-	const { appletViewState, setAppletViewState, clients, activeClientID, setActiveClientID } = useContext(SharedStateContext);
+	const { setAppletViewState, clients, activeClientID, setActiveClientID } = useContext(SharedStateContext);
+
+	//Fetch clients on component mount
+	useEffect(() => {
+		MountClientsNavbar();
+    }, [clients, activeClientID]);
+
+
+	// Remove Active Status from All Elements.
+	const toggleActiveElementsOff = () => {
+		const activeElements = document.getElementsByClassName("activeSidebar");
+		Array.prototype.forEach.call(activeElements, (activeElement) => {
+			if (activeElement.id === `sidebar-client-${activeClientID}`) {
+				return;
+			}
+			activeElement.classList.remove("activeSidebar");
+        });
+	};
 
 	// Updates the active view of the Applet.
 	function SetView(event, view, clientID) {
 		try {
-
+			
+			setActiveClientID(clientID);
+			setAppletViewState(view);
 			toggleActiveElementsOff();
 			
 			// Set selected element to active.
 			const newActiveElement = document.getElementById(event.currentTarget.id);
 			newActiveElement.classList.add("activeSidebar");
 
-			setAppletViewState(view);
-			setActiveClientID(clientID);
-
 		} catch (err) {
 			console.error('Error setting applet view from navbar:', err);
 		}
-	}
-
-	// Remove Active Status from All Elements.
-	const toggleActiveElementsOff = () => {
-		const activeElements = document.getElementsByClassName("activeSidebar");
-		Array.prototype.forEach.call(activeElements, (activeElement) => {
-            activeElement.classList.remove("activeSidebar");
-        });
-	}
-
-	//Fetch clients on component mount
-	useEffect(() => {
-        FetchClientsNavbar();
-    }, [clients, activeClientID, appletViewState]);
-
-	// Fetch all clients from the back-end API
-	function FetchClientsNavbar() {
-		if (!clients || clients.length === 0) {
-            return <div>No clients available</div>;
-        }
+	};
+	
+	function MountClientsNavbar() {
 		try {
+			if (activeClientID != 0){
+				toggleActiveElementsOff();
+			}
+			
 			return clients
-				.filter(client => client && client.name)	
 				.sort((a, b) => {
-                    if (!a.name || !b.name) {
-                        console.error('Client name is undefined:', a, b);
-                        return 0;
-                    }
-                    return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
-                })
+					return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+				})
 				.map((client) => ( 
 					<div 
 						id={`sidebar-client-${client.id}`} 
@@ -82,7 +81,7 @@ export default function Sidebar() {
 			console.error('Error fetching clients for navbar:', err);
 			return <div>Error fetching clients</div>;
 		}
-	};
+	}
 
 
 
@@ -103,7 +102,7 @@ export default function Sidebar() {
 						<div id="client-list" className="sidebar-item collapse">
 
 							{/* Button for 'all clients' view */}
-							<div id="nav-all-clients" className="sidebar-subitem activeSidebar" onClick={(event) => SetView(event, "all-clients", null)}>
+							<div id="nav-all-clients" className="sidebar-subitem activeSidebar" onClick={(event) => SetView(event, "all-clients", 0)}>
 								<div className="sidebar-active-state-wrapper">
 									<div className="active-state-icon"><Caret /></div>
 								</div>
@@ -112,10 +111,10 @@ export default function Sidebar() {
 							</div>
 							
 							{/* Buttons for individual client views */}
-							<div className="sidebar-content">{FetchClientsNavbar()}</div>
+							<div className="sidebar-content">{MountClientsNavbar()}</div>
 							
 							{/* Button for 'add new client' */}
-							<div id="nav-new-client" className="sidebar-subitem" onClick={(event) => SetView(event, "new-client", null)}>
+							<div id="nav-new-client" className="sidebar-subitem" onClick={(event) => SetView(event, "new-client", 0)}>
 								<div className="sidebar-active-state-wrapper">
 									<div className="active-state-icon"><Caret /></div>
 								</div>
@@ -129,7 +128,7 @@ export default function Sidebar() {
 					{/* Settings Section */}
 					<div id="nav-settings-section" className="sidebar-section">
 						
-						<div className="sidebar-item" onClick={(event) => SetView(event, "settings", null)}>
+						<div className="sidebar-item" onClick={(event) => SetView(event, "settings", 0)}>
 							<div className="sidebar-item-name">Settings</div>
 						</div>
 
@@ -139,7 +138,7 @@ export default function Sidebar() {
 					{/* Sample Sidebar Section */}
 					<div id="nav-sample-section" className="sidebar-section">
 						
-						<div className="sidebar-item" onClick={(event) => SetView(event, "", null)}>
+						<div className="sidebar-item" onClick={(event) => SetView(event, "", 0)}>
 							<div className="sidebar-item-name">Sample</div>
 						</div>
 
@@ -147,7 +146,7 @@ export default function Sidebar() {
 		
 					{/* Sample Sidebar Footer */}
 					<div id="nav-sample-footer" className="sidebar-section">
-						<div className="sidebar-item" onClick={(event) => SetView(event, "", null)}>
+						<div className="sidebar-item" onClick={(event) => SetView(event, "", 0)}>
 							<div className="sidebar-item-name">Sample Footer</div>
 						</div>
 					</div>

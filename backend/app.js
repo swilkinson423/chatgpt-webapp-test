@@ -82,7 +82,7 @@ app.post('/clients', async (req, res) => {
 	var { name, website, description, descriptionaddon, products, personas, linkedin, youtube, twitter, facebook, instagram, tiktok } = req.body;
 	try {
 		const result = await pool.query(
-			'WITH post_new_client AS (INSERT INTO clients (name, website, description, descriptionaddon, products, personas) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id) INSERT INTO socials (client_id, linkedin, youtube, twitter, facebook, instagram, tiktok) SELECT client.id, $7, $8, $9, $10, $11, $12 FROM post_new_client client',
+			'WITH post_new_client AS (INSERT INTO clients (name, website, description, descriptionaddon, products, personas) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id) INSERT INTO socials (client_id, linkedin, youtube, twitter, facebook, instagram, tiktok) SELECT client.id, $7, $8, $9, $10, $11, $12 FROM post_new_client client RETURNING client_id AS id',
 			[name, website, description, descriptionaddon, products, personas, linkedin, youtube, twitter, facebook, instagram, tiktok]
 		);
 		res.status(201).json(result.rows[0]);

@@ -14,31 +14,16 @@ import { ReactComponent as LogoTikTok } from "./../../assets/links-tiktok.svg"
 
 export default function AppletViewActiveClient() {
 
-	const { appletViewState, setAppletViewState, clients, setClients, activeClientID } = useContext(SharedStateContext);
+	const { setAppletViewState, clients, setClients, activeClientID, setActiveClientID } = useContext(SharedStateContext);
 
-	const [currentClient, setCurrentClient] = useState(() => {
-		if (activeClientID !== 0) {
-            return clients.find(client => client.id === activeClientID) || {
-                name: '', website: '', description: '', descriptionaddon: '',
-                products: '[{}]', personas: '[{}]', linkedin: '', youtube: '',
-                twitter: '', facebook: '', instagram: '', tiktok: ''
-            };
-        }
-        return {
-            name: '', website: '', description: '', descriptionaddon: '',
-            products: '[{}]', personas: '[{}]', linkedin: '', youtube: '',
-            twitter: '', facebook: '', instagram: '', tiktok: ''
-        };
-	});
+	const [currentClient, setCurrentClient] = useState(null);
+	const [error, setError] = useState(null);
 
-	useEffect(() => {
-        if (activeClientID !== 0) {
-            const activeClient = clients.find(client => client.id === activeClientID);
-            if (activeClient) {
-                setCurrentClient(activeClient);
-            }
-        }
-    }, [activeClientID, clients, appletViewState]);
+    useEffect(() => {
+        axios.get(`http://localhost:3000/clients/${activeClientID}`)
+            .then(response => setCurrentClient(response.data))
+            .catch(err => console.error(err));
+    }, [activeClientID]);
 
 	//------------------------------------------------------------------------------------
 	//-- TODO: Update this so that the edit only updates an individual field -------------
@@ -55,13 +40,12 @@ export default function AppletViewActiveClient() {
 		}));
 	};
 
-
-
 	// Update a client
 	const updateClient = async () => {
 		try {
 			const response = await axios.put(`http://localhost:3000/clients/${currentClient.id}`, currentClient);
-			setClients(clients.map((client) => (client.id === currentClient.id ? response.data : client)));
+			setClients(clients.map((client) => (client.id === currentClient.id ? currentClient : client)));
+			setActiveClientID(currentClient.id);
 			setAppletViewState("active-clients");
 			setIsEditing(false);
 		} catch (err) {
@@ -75,7 +59,7 @@ export default function AppletViewActiveClient() {
 		try {
 			await axios.delete(`http://localhost:3000/clients/${id}`);
 			setClients(clients.filter((client) => client.id !== id));
-			setAppletViewState("home");
+			setAppletViewState("all-clients");
 		} catch (err) {
 			console.error('Error deleting client:', err);
 			alert('Failed to delete client. Please try again.');
@@ -256,6 +240,9 @@ export default function AppletViewActiveClient() {
 		setIsEditing(false);
 	}
 
+	if (!currentClient) return <div>Loading...</div>;
+
+	if (error) return <div>{error}</div>;
 
 	return (
 
@@ -433,8 +420,8 @@ export default function AppletViewActiveClient() {
 					<div className="view-wrapper col-md-6 col-12">
 						<h3>Update Client Info</h3>
 						{clientEdits}
-						{/* <button className="btn btn-danger" onClick={() => deleteClient(currentClient.id)}>Delete</button> */}
-						<button className="btn btn-danger" onClick={() => console.log("Delete Button Has Been Deactivated")}>Delete</button>
+						<button className="btn btn-danger" onClick={() => deleteClient(currentClient.id)}>Delete</button>
+						<button className="btn" onClick={() => console.log("Delete Button Has Been Deactivated")}>Delete</button>
 						<button className="btn btn-primary" onClick={() => setIsEditing(true)}>Edit Client</button>
 					</div>
 

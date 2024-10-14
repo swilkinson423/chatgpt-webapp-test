@@ -24,7 +24,7 @@ export default function AppletAddNewClient() {
         try {
             const postNew = await axios.post(`http://localhost:3000/clients/`, newClient);
             const response = await axios.get(`http://localhost:3000/clients/`);
-            setActiveClientID(postNew.data.id);
+			setActiveClientID(postNew.data.id);
             setAppletViewState("all-clients");
             setClients(response.data);
             setNewClient({

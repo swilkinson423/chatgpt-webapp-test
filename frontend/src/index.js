@@ -7,7 +7,6 @@ import 'bootstrap/dist/js/bootstrap.js';
 import './styles/App.css';
 
 import Navbar from './components/Navbar';
-import Sidebar from './components/Sidebar';
 import App from './components/App';
 import Footer from './components/Footer';
 
@@ -17,14 +16,7 @@ root.render(
 
 	<SharedStateProvider>
 		<Navbar />
-		<div id="applet-window">
-			<div className="container-fluid h-100">
-				<div className="row h-100">
-					<Sidebar />
-					<App />
-				</div>
-			</div>
-		</div>
+		<App />
 		<Footer />
 	</SharedStateProvider>
 

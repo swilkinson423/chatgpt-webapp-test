@@ -6,52 +6,39 @@ import AppletViewActiveClient from './views/Applet-Client-ViewActive';
 import AppletAddNewClient from './views/Applet-Client-AddNew';
 import AppletSettings from './views/Applet-Settings';
 
-import Footer from './Footer';
+import Sidebar from './Sidebar';
 
 export default function App() {
 
-	const { activeHue } 		= useContext(SharedStateContext);
-	const { appletViewState } 	= useContext(SharedStateContext);
+	const { activeHue, appletViewState } = useContext(SharedStateContext);
 
 	document.body.style.setProperty('--color-primary', activeHue);
 
+	const renderAppletView = () => {
+		switch (appletViewState) {
+			case 'all-clients': return <AppletViewAllClient />;
+			case 'active-clients': return <AppletViewActiveClient />;
+			case 'new-client': return <AppletAddNewClient />;
+			case 'settings': return <AppletSettings />;
+			default: return null;
+		}
+	};
+
 	return (
-		<>
-			<div id="applet" className="App container col">
 
-				
-				{appletViewState === "home" &&
-					<></>
-				}
+		<div id="applet-window">
+			<div className="container-fluid h-100">
+				<div className="row h-100">
 
-				{appletViewState === "all-clients" &&
-					<>
-						<AppletViewAllClient />
-					</>
-				}
+					<Sidebar />
 
-				{appletViewState === "active-clients" &&
-					<>
-						<AppletViewActiveClient />
-					</>
-				}
+					<div id="applet" className="App container col">
+						{renderAppletView()}
+					</div>
 
-
-				{appletViewState === "new-client" &&
-					<>
-						<AppletAddNewClient />
-					</>
-				}
-
-
-				{appletViewState === "settings" &&
-					<>
-						<AppletSettings />
-					</>
-				}
-
-
+				</div>
 			</div>
-		</>
+		</div>
+
 	);
 }
