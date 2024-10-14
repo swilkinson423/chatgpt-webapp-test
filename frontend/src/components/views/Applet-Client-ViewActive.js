@@ -353,6 +353,7 @@ export default function AppletViewActiveClient() {
 								
 								{activeClient.products != ''
 									?
+									// console.log(activeClient.products)
 									JSON.parse(activeClient.products).map((product, index) => (
 										<div className="col col-md-4 col-12" key={index}>
 											<div className='product-group-item'>

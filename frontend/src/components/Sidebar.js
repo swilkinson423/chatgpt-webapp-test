@@ -45,7 +45,7 @@ export default function Sidebar() {
 	function FetchClientsNavbar() {
 
 		return clients
-			.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1 ))
+			// .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1 ))
 			.map((client) => ( 
 				<div 
 					id={`sidebar-client-${client.id}`} 
