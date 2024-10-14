@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 import { SharedStateContext } from './../_SharedStateComponent';
@@ -14,53 +14,37 @@ import { ReactComponent as LogoTikTok } from "./../../assets/links-tiktok.svg"
 
 export default function AppletViewActiveClient() {
 
-	const { setAppletViewState } = useContext(SharedStateContext);
-	const { clients, setClients } = useContext(SharedStateContext);
-	const { activeClientID } = useContext(SharedStateContext);
+	const { appletViewState, setAppletViewState, clients, setClients, activeClientID } = useContext(SharedStateContext);
 
-	var activeClient = {
-		name: '', 
-		website: '',
-		description: '', 
-		descriptionaddon: '',
-		products: '',
-		personas: '',
-		linkedin: '',
-		youtube: '',
-		twitter: '',
-		facebook: '',
-		instagram: '',
-		tiktok: ''
-	};
+	const [currentClient, setCurrentClient] = useState(() => {
+		if (activeClientID !== 0) {
+            return clients.find(client => client.id === activeClientID) || {
+                name: '', website: '', description: '', descriptionaddon: '',
+                products: '[{}]', personas: '[{}]', linkedin: '', youtube: '',
+                twitter: '', facebook: '', instagram: '', tiktok: ''
+            };
+        }
+        return {
+            name: '', website: '', description: '', descriptionaddon: '',
+            products: '[{}]', personas: '[{}]', linkedin: '', youtube: '',
+            twitter: '', facebook: '', instagram: '', tiktok: ''
+        };
+	});
 
-	if (activeClientID != 0){
-		activeClient = clients.filter(obj => {return obj.id === activeClientID;})[0] // the [0] is so it returns the object inside the returned array
-	};
+	useEffect(() => {
+        if (activeClientID !== 0) {
+            const activeClient = clients.find(client => client.id === activeClientID);
+            if (activeClient) {
+                setCurrentClient(activeClient);
+            }
+        }
+    }, [activeClientID, clients, appletViewState]);
+
 	//------------------------------------------------------------------------------------
 	//-- TODO: Update this so that the edit only updates an individual field -------------
 	//------------------------------------------------------------------------------------
 
 	const [isEditing, setIsEditing] = useState(false);
-	const [currentClient, setCurrentClient] = useState(null);
-
-	// Update a client
-	const updateClient = async () => {
-		try {
-			const response = await axios.put(`http://localhost:3000/clients/${currentClient.id}`, currentClient);
-			setClients(clients.map((client) => (client.id === currentClient.id ? response.data : client)));
-			setAppletViewState("home");
-			setIsEditing(false);
-			setCurrentClient(null);
-		} catch (err) {
-			console.error('Error updating client:', err);
-		}
-	};
-
-	// Set current client for editing
-	const handleEdit = (client) => {
-		setCurrentClient(client);
-		setIsEditing(true);
-	};
 
 	// Handle form input for editing clients
 	const handleEditChange = (e) => {
@@ -71,13 +55,30 @@ export default function AppletViewActiveClient() {
 		}));
 	};
 
+
+
+	// Update a client
+	const updateClient = async () => {
+		try {
+			const response = await axios.put(`http://localhost:3000/clients/${currentClient.id}`, currentClient);
+			setClients(clients.map((client) => (client.id === currentClient.id ? response.data : client)));
+			setAppletViewState("active-clients");
+			setIsEditing(false);
+		} catch (err) {
+			console.error('Error updating client:', err);
+			alert('Failed to update client. Please try again.');
+		}
+	};
+
 	// Delete a client
 	const deleteClient = async (id) => {
 		try {
 			await axios.delete(`http://localhost:3000/clients/${id}`);
 			setClients(clients.filter((client) => client.id !== id));
+			setAppletViewState("home");
 		} catch (err) {
 			console.error('Error deleting client:', err);
+			alert('Failed to delete client. Please try again.');
 		}
 	};
 
@@ -267,7 +268,7 @@ export default function AppletViewActiveClient() {
 				{/* Tabs for navigating client sub-views */}
 				<div className="row view-tabs">
 
-					<div className="tabs-title"><h1>{activeClient.name}</h1></div>
+					<div className="tabs-title"><h1>{currentClient.name}</h1></div>
 
 					<div className="tabs-links">
 						<button className="tablink active" onClick={(event) => openTab(event, 'about')}>About</button>
@@ -290,8 +291,8 @@ export default function AppletViewActiveClient() {
 					{/* Section 01 - Description */}
 					<div id="description-wrapper" className="view-wrapper col-md-9 col-12">
 						<h3>Description</h3>
-						<p>{activeClient.description}</p>
-						<p>{activeClient.descriptionaddon}</p>
+						<p>{currentClient.description}</p>
+						<p>{currentClient.descriptionaddon}</p>
 					</div>
 
 					{/* Section 02 - Website & Social Links */}
@@ -301,9 +302,9 @@ export default function AppletViewActiveClient() {
 							<div className="row">
 								
 								{/* Website Link */}
-								{activeClient.website &&
+								{currentClient.website &&
 									<div className="col col-md-12 col-6">
-										<a className="link-group-item" href={activeClient.website} target="_blank" rel="noopener noreferrer">
+										<a className="link-group-item" href={currentClient.website} target="_blank" rel="noopener noreferrer">
 											<div className="link-group-icon"><LogoLaptop /></div>
 											<div className="link-group-name">Website</div>
 										</a>
@@ -311,9 +312,9 @@ export default function AppletViewActiveClient() {
 								}
 
 								{/* LinkedIn Link */}
-								{activeClient.linkedin &&
+								{currentClient.linkedin &&
 									<div className="col col-md-12 col-6">
-										<a className="link-group-item" href={activeClient.linkedin} target="_blank" rel="noopener noreferrer">
+										<a className="link-group-item" href={currentClient.linkedin} target="_blank" rel="noopener noreferrer">
 											<div className="link-group-icon"><LogoLinkedIn /></div>
 											<div className="link-group-name">LinkedIn</div>
 										</a>
@@ -321,9 +322,9 @@ export default function AppletViewActiveClient() {
 								}
 
 								{/* YouTube Link */}
-								{activeClient.youtube &&
+								{currentClient.youtube &&
 									<div className="col col-md-12 col-6">
-										<a className="link-group-item" href={activeClient.youtube} target="_blank" rel="noopener noreferrer">
+										<a className="link-group-item" href={currentClient.youtube} target="_blank" rel="noopener noreferrer">
 											<div className="link-group-icon"><LogoYouTube /></div>
 											<div className="link-group-name">YouTube</div>
 										</a>
@@ -331,9 +332,9 @@ export default function AppletViewActiveClient() {
 								}
 
 								{/* Twitter Link */}
-								{activeClient.twitter &&
+								{currentClient.twitter &&
 									<div className="col col-md-12 col-6">
-										<a className="link-group-item" href={activeClient.twitter} target="_blank" rel="noopener noreferrer">
+										<a className="link-group-item" href={currentClient.twitter} target="_blank" rel="noopener noreferrer">
 											<div className="link-group-icon"><LogoTwitter /></div>
 											<div className="link-group-name">Twitter</div>
 										</a>
@@ -351,10 +352,10 @@ export default function AppletViewActiveClient() {
 						<div className="container">
 							<div className="row">
 								
-								{activeClient.products != ''
+								{currentClient.products != ''
 									?
-									// console.log(activeClient.products)
-									JSON.parse(activeClient.products).map((product, index) => (
+									// console.log(currentClient.products)
+									JSON.parse(currentClient.products).map((product, index) => (
 										<div className="col col-md-4 col-12" key={index}>
 											<div className='product-group-item'>
 												<h4>{product.name}</h4>
@@ -387,7 +388,7 @@ export default function AppletViewActiveClient() {
 					{/* Section 01 - Target Personas */}
 					<div className="view-wrapper col-md-6 col-12">
 						<h3>Persona #1</h3>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ac bibendum tellus, sit amet sodales tortor. Aliquam id pretium mauris, eget rhoncus orci. Nam magna leo, aliquam eget nisl quis, efficitur efficitur ligula. Phasellus sodales malesuada luctus. Pellentesque ut nisi posuere, imperdiet libero vel, accumsan sapien. Fusce semper, lorem a.</p>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ac bibendum tellus, sit amet sodales tortor.</p>
 					</div>
 
 					{/* Section 02 */}
@@ -432,9 +433,9 @@ export default function AppletViewActiveClient() {
 					<div className="view-wrapper col-md-6 col-12">
 						<h3>Update Client Info</h3>
 						{clientEdits}
-						<button className="btn btn-danger" onClick={() => deleteClient(activeClient.id)}>Delete</button>
+						{/* <button className="btn btn-danger" onClick={() => deleteClient(currentClient.id)}>Delete</button> */}
 						<button className="btn btn-danger" onClick={() => console.log("Delete Button Has Been Deactivated")}>Delete</button>
-						<button className="btn btn-secondary" onClick={() => handleEdit(activeClient)}>Edit</button>
+						<button className="btn btn-primary" onClick={() => setIsEditing(true)}>Edit Client</button>
 					</div>
 
 					{/* Section 02 - ?? */}

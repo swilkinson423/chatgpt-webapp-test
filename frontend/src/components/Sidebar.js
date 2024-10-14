@@ -8,7 +8,7 @@ import { ReactComponent as AddClient } from "./../assets/person-fill-add.svg"
 
 export default function Sidebar() {
 
-	const { setAppletViewState, clients, activeClientID, setActiveClientID } = useContext(SharedStateContext);
+	const { appletViewState, setAppletViewState, clients, activeClientID, setActiveClientID } = useContext(SharedStateContext);
 
 	// Updates the active view of the Applet.
 	function SetView(event, view, clientID) {
@@ -39,36 +39,49 @@ export default function Sidebar() {
 	//Fetch clients on component mount
 	useEffect(() => {
         FetchClientsNavbar();
-    }, [clients, activeClientID]);
+    }, [clients, activeClientID, appletViewState]);
 
 	// Fetch all clients from the back-end API
 	function FetchClientsNavbar() {
+		if (!clients || clients.length === 0) {
+            return <div>No clients available</div>;
+        }
+		try {
+			return clients
+				.filter(client => client && client.name)	
+				.sort((a, b) => {
+                    if (!a.name || !b.name) {
+                        console.error('Client name is undefined:', a, b);
+                        return 0;
+                    }
+                    return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+                })
+				.map((client) => ( 
+					<div 
+						id={`sidebar-client-${client.id}`} 
+						className={`sidebar-subitem ${client.id === activeClientID ? 'activeSidebar' : ''}`} 
+						key={`client-${client.id}`}
+						onClick={(event) => SetView(event, 'active-clients', client.id)}
+					>
+						
+						<div className="sidebar-active-state-wrapper" key={`wrapper-${client.id}`}>
+							{client.id === activeClientID && (
+								<div className="active-state-icon" key={`icon-${client.id}`}>
+									<Caret key={`caret-${client.id}`} />
+								</div>
+							)}
+						</div>
+						
+						<div className="sidebar-item-name" key={`name-${client.id}`}>
+							{client.name}
+						</div>
 
-		return clients
-			// .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1 ))
-			.map((client) => ( 
-				<div 
-					id={`sidebar-client-${client.id}`} 
-					className={`sidebar-subitem ${client.id === activeClientID ? 'activeSidebar' : ''}`} 
-					key={`client-${client.id}`}
-					onClick={(event) => SetView(event, 'active-clients', client.id)}
-				>
-					
-					<div className="sidebar-active-state-wrapper" key={`wrapper-${client.id}`}>
-						{client.id === activeClientID && (
-							<div className="active-state-icon" key={`icon-${client.id}`}>
-								<Caret key={`caret-${client.id}`} />
-							</div>
-						)}
 					</div>
-					
-					<div className="sidebar-item-name" key={`name-${client.id}`}>
-                        {client.name}
-                    </div>
-
-				</div>
 			));
-			
+		} catch (err) {
+			console.error('Error fetching clients for navbar:', err);
+			return <div>Error fetching clients</div>;
+		}
 	};
 
 
@@ -99,7 +112,7 @@ export default function Sidebar() {
 							</div>
 							
 							{/* Buttons for individual client views */}
-							{FetchClientsNavbar()}
+							<div className="sidebar-content">{FetchClientsNavbar()}</div>
 							
 							{/* Button for 'add new client' */}
 							<div id="nav-new-client" className="sidebar-subitem" onClick={(event) => SetView(event, "new-client", null)}>
@@ -145,7 +158,6 @@ export default function Sidebar() {
 
 			{/* SIDEBAR TOGGLE */}
 			<button id="sidebar-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-expanded="false" aria-controls="sidebar"><Icon_Sidebar /></button>
-
 		</>
 
 	);

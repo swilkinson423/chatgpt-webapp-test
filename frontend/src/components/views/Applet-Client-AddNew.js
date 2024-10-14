@@ -9,7 +9,7 @@ export default function AppletAddNewClient() {
 
 	const [newClient, setNewClient] = useState({
         name: '', website: '', description: '', descriptionaddon: '',
-        products: {}, personas: {}, linkedin: '', youtube: '',
+        products: '[{}]', personas: '[{}]', linkedin: '', youtube: '',
         twitter: '', facebook: '', instagram: '', tiktok: ''
     });
 
@@ -25,11 +25,11 @@ export default function AppletAddNewClient() {
             const postNew = await axios.post(`http://localhost:3000/clients/`, newClient);
             const response = await axios.get(`http://localhost:3000/clients/`);
             setActiveClientID(postNew.data.id);
-            setAppletViewState("active-clients");
+            setAppletViewState("all-clients");
             setClients(response.data);
             setNewClient({
                 name: '', website: '', description: '', descriptionaddon: '',
-                products: {}, personas: {}, linkedin: '', youtube: '',
+                products: '[{}]', personas: '[{}]', linkedin: '', youtube: '',
                 twitter: '', facebook: '', instagram: '', tiktok: ''
             });
         } catch (err) {

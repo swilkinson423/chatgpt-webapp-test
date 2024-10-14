@@ -98,7 +98,7 @@ app.put('/clients/:id', async (req, res) => {
 	const { name, website, description, descriptionaddon, products, personas, linkedin, youtube, twitter, facebook, instagram, tiktok } = req.body;
 	try {
 		const result = await pool.query(
-			'WITH update_client AS (UPDATE clients SET name = $2, website = $3, description = $4, descriptionaddon = $5, products = $6, personas = $7 WHERE id = $1) UPDATE socials SET client_id = $1, linkedin = $8, youtube = $9, twitter = $10, facebook = $11, instagram = $12, tiktok = $13',
+			'WITH update_client AS (UPDATE clients SET name = $2, website = $3, description = $4, descriptionaddon = $5, products = $6, personas = $7 WHERE id = $1) UPDATE socials SET linkedin = $8, youtube = $9, twitter = $10, facebook = $11, instagram = $12, tiktok = $13 WHERE client_id = $1',
 			[id, name, website, description, descriptionaddon, products, personas, linkedin, youtube, twitter, facebook, instagram, tiktok]
 		);
 		res.status(200).json(result.rows[0]);
