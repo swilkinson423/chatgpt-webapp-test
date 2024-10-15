@@ -43,11 +43,11 @@ export default function AppletViewActiveClient() {
 	// Update a client
 	const updateClient = async () => {
 		try {
-			const response = await axios.put(`http://localhost:3000/clients/${currentClient.id}`, currentClient);
+			await axios.put(`http://localhost:3000/clients/${currentClient.id}`, currentClient)
 			setClients(clients.map((client) => (client.id === currentClient.id ? currentClient : client)));
 			setActiveClientID(currentClient.id);
 			setAppletViewState("active-clients");
-			setIsEditing(false);
+			openTab('about');
 		} catch (err) {
 			console.error('Error updating client:', err);
 			alert('Failed to update client. Please try again.');
@@ -59,6 +59,7 @@ export default function AppletViewActiveClient() {
 		try {
 			await axios.delete(`http://localhost:3000/clients/${id}`);
 			setClients(clients.filter((client) => client.id !== id));
+			setActiveClientID("all-clients");
 			setAppletViewState("all-clients");
 		} catch (err) {
 			console.error('Error deleting client:', err);
@@ -69,7 +70,7 @@ export default function AppletViewActiveClient() {
 	var clientEdits = <></>;
 
 	if (isEditing === true) {
-		clientEdits =
+		clientEdits =  
 		<>
 
 			{/* Header */}
@@ -216,11 +217,12 @@ export default function AppletViewActiveClient() {
 	//------------------------------------------------------------------------------------
 
 	// Updates the active tabs and the sub-views
-	function openTab(evt, tabName) {
+	function openTab(tabName) {
 
 		var i, tablinks, tabcontent;
 
 		// Get all elements with class="tabcontent" and hide them
+		console.log(tabName);
 		tabcontent = document.getElementsByClassName("tabcontent");
 		for (i = 0; i < tabcontent.length; i++) {
 			tabcontent[i].style.display = "none";
@@ -228,14 +230,17 @@ export default function AppletViewActiveClient() {
 		}
 
 		// Get all elements with class="tablinks" and remove the class "active"
+		console.log("2");
 		tablinks = document.getElementsByClassName("tablink");
 		for (i = 0; i < tablinks.length; i++) {
 			tablinks[i].className = tablinks[i].className.replace(" active", "");
 		}
 
 		// Show the current tab, and add an "active" class to the button that opened the tab
-		document.getElementById(tabName).style.display = "flex";
-		evt.currentTarget.className += " active";
+		console.log("3");
+		document.getElementById(`tab-${tabName}`).style.display = "flex";
+		console.log("4");
+		document.getElementById(`tabbutton-${tabName}`).className += " active";
 
 		setIsEditing(false);
 	}
@@ -258,17 +263,17 @@ export default function AppletViewActiveClient() {
 					<div className="tabs-title"><h1>{currentClient.name}</h1></div>
 
 					<div className="tabs-links">
-						<button className="tablink active" onClick={(event) => openTab(event, 'about')}>About</button>
-						<button className="tablink" onClick={(event) => openTab(event, 'personas')}>Target Personas</button>
-						<button className="tablink" onClick={(event) => openTab(event, 'topics')}>Topics</button>
-						<button className="tablink" onClick={(event) => openTab(event, 'settings')}>Settings</button>
+						<button id="tabbutton-about" className="tablink active" onClick={() => openTab('about')}>About</button>
+						<button id="tabbutton-personas" className="tablink" onClick={() => openTab('personas')}>Target Personas</button>
+						<button id="tabbutton-topics" className="tablink" onClick={() => openTab('topics')}>Topics</button>
+						<button id="tabbutton-settings" className="tablink" onClick={() => openTab('settings')}>Settings</button>
 					</div>
 
 				</div>
 				
 				
 				{/* Windowlet for client info */}
-				<div id="about" className="view-window row tabcontent tabDefault">
+				<div id="tab-about" className="view-window row tabcontent tabDefault">
 
 					{/* Header Section */}
 					<div className="view-header col-12">
@@ -365,7 +370,7 @@ export default function AppletViewActiveClient() {
 
 
 				{/* Window for Target Personas */}
-				<div id="personas" className="view-window row tabcontent">
+				<div id="tab-personas" className="view-window row tabcontent">
 
 					{/* Header Section */}
 					<div className="view-header col-12">
@@ -388,7 +393,7 @@ export default function AppletViewActiveClient() {
 
 
 				{/* Window for Toppics */}
-				<div id="topics" className="view-window row tabcontent">
+				<div id="tab-topics" className="view-window row tabcontent">
 
 					{/* Header Section */}
 					<div className="view-header col-12">
@@ -409,7 +414,7 @@ export default function AppletViewActiveClient() {
 
 
 				{/* Window for Settings */}
-				<div id="settings" className="view-window row tabcontent">
+				<div id="tab-settings" className="view-window row tabcontent">
 
 					{/* Header Section */}
 					<div className="view-header col-12">

@@ -14,7 +14,7 @@ export function SharedStateProvider({ children }) {
 	const [clients, setClients] = useState([]);
 
 	// Determines which client is rendered.
-	const [activeClientID, setActiveClientID] = useState(0);
+	const [activeClientID, setActiveClientID] = useState("none");
 
 	return (
 		<SharedStateContext.Provider value=	{{ 
