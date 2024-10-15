@@ -368,9 +368,10 @@ a {
 		}
 
 		.view-window p {
-			font-size: 0.9em;
+			font-size: 1em;
 			text-align: justify;
 			text-justify: auto;
+			margin-bottom: 10px;
 		}
 
 		.view-window ul {
