@@ -48,36 +48,38 @@ export default function AppletAddNewClient() {
 	return (
 
 		/* --+-- ADD NEW CLIENT --+-- */
-		<div id="applet-add-new" className="applet-view">
+		<div id="applet" className="App container col">
+			<div className="container view-container">
 
-			{/* Header */}
-			<h2 className="mb-3">Add New Client</h2>
+				{/* Header */}
+				<h2 className="mb-3">Add New Client</h2>
 
-			{/* Client Name */}
-			<h6>Name:</h6>
-			<input
-				type="text"
-				name="name"
-				placeholder="Client Name"
-				className="form-control mb-3"
-				value={newClient.name}
-				onChange={handleInputChange}
-			/>
+				{/* Client Name */}
+				<h6>Name:</h6>
+				<input
+					type="text"
+					name="name"
+					placeholder="Client Name"
+					className="form-control mb-3"
+					value={newClient.name}
+					onChange={handleInputChange}
+				/>
 
-			{/* Client Website */}
-			<h6>Company Website:</h6>
-			<input
-				type="text"
-				name="website"
-				placeholder="Client Website"
-				className="form-control mb-3"
-				value={newClient.website}
-				onChange={handleInputChange}
-			/>
+				{/* Client Website */}
+				<h6>Company Website:</h6>
+				<input
+					type="text"
+					name="website"
+					placeholder="Client Website"
+					className="form-control mb-3"
+					value={newClient.website}
+					onChange={handleInputChange}
+				/>
 
-			{/* Submit Button */}
-			<button className="btn btn-primary" onClick={addClient}>Add Client</button>
+				{/* Submit Button */}
+				<button className="btn btn-primary" onClick={addClient}>Add Client</button>
 
+			</div>
 		</div>
 	);
 };

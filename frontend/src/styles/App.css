@@ -63,7 +63,16 @@ a {
 
 
 /* --+--+----------------------------+--+-- */
-/* --+--+-- NAVBAR STYLES -----------+--+-- */
+/* --+--+-- APP WINDOW STYLES -------+--+-- */
+/* --+--+----------------------------+--+-- */
+#app-window {
+	height: calc(100% - 110px);
+	background-color: var(--color-background-dark);
+}
+
+
+/* --+--+----------------------------+--+-- */
+/* --+--+-- SIDEBAR STYLES -----------+--+-- */
 /* --+--+----------------------------+--+-- */
 #sidebar-toggle {
 	position: relative;
@@ -90,7 +99,7 @@ a {
 	overflow-x: hidden;
 	overflow-y: scroll;
 	max-width: 250px;
-	background-color: var(--color-background-main);
+	background-color: var(--color-background-dark);
 	color: var(--color-font-main);
 	padding: 0 0 0 0;
 	border-left: none;
@@ -223,49 +232,30 @@ a {
 	border-top: 2px solid var(--color-background-light);
 }
 
-
 /* --+--+----------------------------+--+-- */
 /* --+--+-- APPLET STYLES -----------+--+-- */
 /* --+--+----------------------------+--+-- */
-#applet-window {
-	height: calc(100% - 110px);
-	background-color: var(--color-background-light);
+#applet {
+	height: 100%;
+	overflow: hidden;
 }
-
-	#applet {
-		height: 100%;
-		overflow: scroll;
-		transition: all 0.3s;
-
-	}
 
 	#applet.collapsed {
 		margin-left: 0;
 	}
 
-/* --+--+-- View Active Client --+--+-- */
-#applet-view-active {
+/* Style the main view container */
+.view-container {
 	height: 100%;
-	padding-top: 45px;
+	padding: 45px 0 70px 0;
+	min-width: 450px;
 }
 
-#applet-view-active p {
-	text-align: left;
-	text-justify: auto;
-}
-
-	/* Style the view container */
-	.view-container {
-		padding: 0;
-		min-width: 450px;
-	}
-
-	/* Style the view tabs */
+	/* Style the view container tabs */
 	.view-tabs {
 		width: 100%;
 		height: fit-content;
 		margin: 0;
-		/* padding: 0; */
 		justify-content: space-between;
 	}
 
@@ -303,7 +293,7 @@ a {
 			height: 50px;
 			background-color: inherit;
 			color: inherit;
-			border: 1px solid var(--color-background-dark);
+			border: 1px solid var(--color-background-Xdark);
 			border-radius: 10px 10px 0 0;
 			cursor: pointer;
 			margin: 0px 3px;
@@ -313,7 +303,7 @@ a {
 		}
 		
 		.view-tabs button.active {
-			background-color: var(--color-background-dark);
+			background-color: var(--color-background-Xdark);
 		}
 
 		.view-tabs button:hover {
@@ -321,55 +311,75 @@ a {
 			border: 1px solid var(--color-background-accent-main);
 		}
 	
-	/* Style the window containing the tab content */
+	/* Style the view container body */
 	.view-window {
+		height: 100%;
 		width: 100%;
 		margin: 0;
+		margin: 10px 0  10px 0;
 		display: flex;
-		
+		overflow: scroll;
 	}
-		.view-window h1 {
-			/* color: red; */
-		}
-
-		.view-window h2 {
-			color: var(--color-background-accent-light);
-		}
-
-		.view-window h3 {
-			color: var(--color-background-Xlight);
-			border-bottom: 1px solid var(--color-background-Xlight);
-		}
-
-		.view-window h4 {
-			/* color: yellow; */
-		}
-
-		.view-window p {
-			/* color: coral; */
-		}
-	
-		.tabcontent {
-			
-		} 
-
-		.view-window .view-header {
-			/* */
+		
+		.view-window .view-body {
+			background-color: var(--color-background-main);
+			border-radius: 10px;
+			margin-top: 10px;
+			padding-top: 10px;
 		}
 
 		.view-window .view-wrapper {
-			/* */
+			margin-bottom: 10px;
 		}
 
-		/* Special formatting for the description section */
-		#description-wrapper {
-			/* */
+		.view-window h1 {
+			font-size: 2em;
+			font-weight: bold;
+			color: var(--color-background-accent-main);
 		}
 
-			#description-wrapper p {
-				text-align: justify;
-				text-justify: auto;
-			}
+		.view-window h2 {
+			font-size: 1.5em;
+			font-weight: bolder;
+			color: var(--color-background-accent-light);
+			border-bottom: 1px solid var(--color-background-accent-light);
+		}
+
+		.view-window h3 {
+			font-size: 1.1em;
+			font-weight: bold;
+			font-style: italic;
+			color: var(--color-background-accent-light);
+		}
+
+		.view-window h4 {
+			font-size: 0.9em;
+			font-weight: normal;
+			color: var(--color-font-main);
+		}
+
+		.view-window h5 {
+			font-size: 0.8em;
+			font-style: italic;
+		}
+
+		.view-window h6 {
+			font-size: 0.8em;
+		}
+
+		.view-window p {
+			font-size: 0.9em;
+			text-align: justify;
+			text-justify: auto;
+		}
+
+		.view-window ul {
+			padding-left: 15px;
+		}
+
+		.view-window li {
+			
+		}
 
 		/* Special formatting for the link group */
 		#link-group-wrapper {
@@ -431,26 +441,6 @@ a {
 				text-overflow: ellipsis;
 				padding: 0 0 0 6px;
 			}
-
-
-		#product-group-wrapper {
-			/* */
-		}
-
-			#product-group-wrapper .container {
-				margin: 0;
-				padding: 0;
-			}
-
-			#product-group-wrapper .row {
-				/* */
-			}
-
-			#product-group-wrapper .col {
-				/* */
-			}
-
-
 
 /* --+--+-- View All Clients --+--+-- */
 #applet-view-all {

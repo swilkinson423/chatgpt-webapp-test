@@ -25,20 +25,22 @@ export default function AppletViewAllClient() {
 	return (
 
 		/* --+--+-- VIEW ALL CLIENTS --+--+-- */
-		<div id="applet-view-all" className="applet-view">
+		<div id="applet" className="App container col">
+			<div className="container view-container">
 
-			{/* Display Clients Dashboard */}
-			<div className="list-group">
-				{clients.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1 ).map((client, index) => (
-					<div className="list-group-item d-flex justify-content-between align-items-center" key={index}>
-						<div>
-							<h5>{client.name}</h5>
-							<p>{client.description}</p>
+				{/* Display Clients Dashboard */}
+				<div className="list-group">
+					{clients.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1 ).map((client, index) => (
+						<div className="list-group-item d-flex justify-content-between align-items-center" key={index}>
+							<div>
+								<h5>{client.name}</h5>
+								<p>{client.description}</p>
+							</div>
 						</div>
-					</div>
-				))}
-			</div>
+					))}
+				</div>
 
+			</div>
 		</div>
 	);
 };
