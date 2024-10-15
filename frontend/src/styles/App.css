@@ -291,14 +291,14 @@ a {
 			padding: 0;
 		}
 
-		.view-tabs .tabs-links {
+		.view-tabs .tabs-buttons {
 			width: fit-content;
 			height: fit-content;
 			margin: 0;
 			padding: 0;
 		}
 
-		.view-tabs .tablink {
+		.view-tabs .tabbutton {
 			width: 100px;
 			height: 50px;
 			background-color: inherit;
@@ -309,6 +309,7 @@ a {
 			margin: 0px 3px;
 			transition: 0.3s;
 			border-radius: 10px;
+			transition-duration: 0s !important;
 		}
 		
 		.view-tabs button.active {
@@ -349,11 +350,16 @@ a {
 		}
 	
 		.tabcontent {
-			display: none;
+			display: none !important;
+			transition-duration: 0s !important;
+			z-index: 0 !important;
 		} 
 
-		.tabcontent.tabDefault {
-			display: flex;
+		.tabcontent.active {
+			display: flex !important;
+			transition-duration: 0s !important;
+			z-index: 100 !important;
+
 		} 
 
 		.view-window .view-header {

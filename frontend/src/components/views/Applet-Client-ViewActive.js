@@ -20,9 +20,10 @@ export default function AppletViewActiveClient() {
 	const [error, setError] = useState(null);
 
     useEffect(() => {
-        axios.get(`http://localhost:3000/clients/${activeClientID}`)
+		axios.get(`http://localhost:3000/clients/${activeClientID}`)
             .then(response => setCurrentClient(response.data))
             .catch(err => console.error(err));
+		openTab("about");
     }, [activeClientID]);
 
 	//------------------------------------------------------------------------------------
@@ -218,32 +219,31 @@ export default function AppletViewActiveClient() {
 
 	// Updates the active tabs and the sub-views
 	function openTab(tabName) {
+		try {
+			var i, tabbuttons, tabcontents, tabButtonAdd, tabContentAdd;
 
-		var i, tablinks, tabcontent;
+			setIsEditing(false);
 
-		// Get all elements with class="tabcontent" and hide them
-		console.log(tabName);
-		tabcontent = document.getElementsByClassName("tabcontent");
-		for (i = 0; i < tabcontent.length; i++) {
-			tabcontent[i].style.display = "none";
-			tabcontent[i].className = tabcontent[i].className.replace(" tabDefault", "");
-		}
+			// Get all current 'active' tab elements elements.
+			tabbuttons = document.querySelectorAll(".tabbutton.active");
+			tabcontents = document.querySelectorAll(".tabcontent.active");
 
-		// Get all elements with class="tablinks" and remove the class "active"
-		console.log("2");
-		tablinks = document.getElementsByClassName("tablink");
-		for (i = 0; i < tablinks.length; i++) {
-			tablinks[i].className = tablinks[i].className.replace(" active", "");
-		}
+			// Get all tab elements elements to make 'active' 
+			tabButtonAdd = document.getElementById(`tabbutton-${tabName}`);
+			tabContentAdd = document.getElementById(`tabcontent-${tabName}`);
 
-		// Show the current tab, and add an "active" class to the button that opened the tab
-		console.log("3");
-		document.getElementById(`tab-${tabName}`).style.display = "flex";
-		console.log("4");
-		document.getElementById(`tabbutton-${tabName}`).className += " active";
+			// Remove "active" class from all other tab elements			
+			tabbuttons[0].classList.remove("active");
+			tabcontents[0].classList.remove("active");
 
-		setIsEditing(false);
-	}
+			// Add "active" class to desired tab elements
+			tabContentAdd.classList.add("active");
+			tabButtonAdd.classList.add("active");
+			
+		} catch (err) {
+			return;
+		};
+	};
 
 	if (!currentClient) return <div>Loading...</div>;
 
@@ -262,18 +262,18 @@ export default function AppletViewActiveClient() {
 
 					<div className="tabs-title"><h1>{currentClient.name}</h1></div>
 
-					<div className="tabs-links">
-						<button id="tabbutton-about" className="tablink active" onClick={() => openTab('about')}>About</button>
-						<button id="tabbutton-personas" className="tablink" onClick={() => openTab('personas')}>Target Personas</button>
-						<button id="tabbutton-topics" className="tablink" onClick={() => openTab('topics')}>Topics</button>
-						<button id="tabbutton-settings" className="tablink" onClick={() => openTab('settings')}>Settings</button>
+					<div className="tabs-buttons">
+						<button id="tabbutton-about" className="tabbutton active" onClick={() => openTab('about')}>About</button>
+						<button id="tabbutton-personas" className="tabbutton" onClick={() => openTab('personas')}>Target Personas</button>
+						<button id="tabbutton-topics" className="tabbutton" onClick={() => openTab('topics')}>Topics</button>
+						<button id="tabbutton-settings" className="tabbutton" onClick={() => openTab('settings')}>Settings</button>
 					</div>
 
 				</div>
 				
 				
 				{/* Windowlet for client info */}
-				<div id="tab-about" className="view-window row tabcontent tabDefault">
+				<div id="tabcontent-about" className="view-window row tabcontent active">
 
 					{/* Header Section */}
 					<div className="view-header col-12">
@@ -370,7 +370,7 @@ export default function AppletViewActiveClient() {
 
 
 				{/* Window for Target Personas */}
-				<div id="tab-personas" className="view-window row tabcontent">
+				<div id="tabcontent-personas" className="view-window row tabcontent">
 
 					{/* Header Section */}
 					<div className="view-header col-12">
@@ -393,7 +393,7 @@ export default function AppletViewActiveClient() {
 
 
 				{/* Window for Toppics */}
-				<div id="tab-topics" className="view-window row tabcontent">
+				<div id="tabcontent-topics" className="view-window row tabcontent">
 
 					{/* Header Section */}
 					<div className="view-header col-12">
@@ -414,7 +414,7 @@ export default function AppletViewActiveClient() {
 
 
 				{/* Window for Settings */}
-				<div id="tab-settings" className="view-window row tabcontent">
+				<div id="tabcontent-settings" className="view-window row tabcontent">
 
 					{/* Header Section */}
 					<div className="view-header col-12">
