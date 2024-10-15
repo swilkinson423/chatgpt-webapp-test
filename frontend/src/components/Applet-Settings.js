@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { SharedStateContext } from './../_SharedStateComponent';
+import { SharedStateContext } from './_SharedStateComponent';
 
 
 export default function AppletSettings(){

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import axios from 'axios';
 
-import { SharedStateContext } from './../_SharedStateComponent';
+import { SharedStateContext } from './_SharedStateComponent';
 
 export default function AppletViewAllClient() {
 

@@ -350,16 +350,7 @@ a {
 		}
 	
 		.tabcontent {
-			display: none !important;
-			transition-duration: 0s !important;
-			z-index: 0 !important;
-		} 
-
-		.tabcontent.active {
-			display: flex !important;
-			transition-duration: 0s !important;
-			z-index: 100 !important;
-
+			
 		} 
 
 		.view-window .view-header {

@@ -6,9 +6,12 @@ export function SharedStateProvider({ children }) {
 
 	// Used to set the UI colors.
 	const [activeHue, setActiveHue] = useState(200);
-	
+
 	// Determines which applet is rendered.
 	const [appletViewState, setAppletViewState] = useState("all-clients");
+
+	// Determines which active client tab is open.
+	const [openTab, setOpenTab] = useState("about");
 
 	// Holds the active client list
 	const [clients, setClients] = useState([]);
@@ -16,12 +19,17 @@ export function SharedStateProvider({ children }) {
 	// Determines which client is rendered.
 	const [activeClientID, setActiveClientID] = useState("none");
 
+	// The current client object
+	const [currentClient, setCurrentClient] = useState("none");
+
 	return (
-		<SharedStateContext.Provider value=	{{ 
-												activeHue,			setActiveHue,									
-												appletViewState, 	setAppletViewState, 
-												clients,			setClients,
-												activeClientID, 	setActiveClientID,
+		<SharedStateContext.Provider value={{
+												activeHue, setActiveHue,
+												appletViewState, setAppletViewState,
+												openTab, setOpenTab,
+												clients, setClients,
+												activeClientID, setActiveClientID,
+												currentClient, setCurrentClient
 											}}>
 			{children}
 		</SharedStateContext.Provider>

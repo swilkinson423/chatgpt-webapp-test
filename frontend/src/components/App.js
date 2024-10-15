@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import { SharedStateContext } from './_SharedStateComponent';
 
-import AppletViewAllClient from './views/Applet-Client-ViewAll';
-import AppletViewActiveClient from './views/Applet-Client-ViewActive';
-import AppletAddNewClient from './views/Applet-Client-AddNew';
-import AppletSettings from './views/Applet-Settings';
+import AppletViewAllClient from './Applet-AllClients';
+import AppletViewActiveClient from './Applet-ActiveClient';
+import AppletAddNewClient from './Applet-NewClient';
+import AppletSettings from './Applet-Settings';
 
 import Sidebar from './Sidebar';
 
