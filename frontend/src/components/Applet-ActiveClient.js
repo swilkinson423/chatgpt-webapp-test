@@ -36,24 +36,24 @@ export default function AppletViewActiveClient() {
 	return (
 
 		/* --+--+-- VIEW ACTIVE CLIENT --+--+-- */
-		<div id="applet" className="App container col">
-			<div className="container view-container">
+		<div id="applet" className="">
 
-				{/* Tabs for navigating client sub-views */}
-				<div className="row view-tabs">
-					<div className="tabs-title"><h1>{currentClient.name}</h1></div>
-					<div className="tabs-buttons">
-						<button id="tabbutton-about" className={`tabbutton ${openTab === 'about' ? 'active' : ''}`} onClick={() => setOpenTab('about')}>About</button>
-						<button id="tabbutton-personas" className={`tabbutton ${openTab === 'personas' ? 'active' : ''}`} onClick={() => setOpenTab('personas')}>Target Personas</button>
-						<button id="tabbutton-topics" className={`tabbutton ${openTab === 'topics' ? 'active' : ''}`} onClick={() => setOpenTab('topics')}>Topics</button>
-						<button id="tabbutton-settings" className={`tabbutton ${openTab === 'settings' ? 'active' : ''}`} onClick={() => setOpenTab('settings')}>Settings</button>
-					</div>
+			{/* Header Element for Section Title & Nav Elements */}
+			<div className="view-header">
+				<div className="view-header title">{currentClient.name}</div>
+				<div className="view-header navbuttons">
+					<button className={`navbtn ${openTab === 'about' ? 'active' : ''}`} onClick={() => setOpenTab('about')}>About</button>
+					<button className={`navbtn ${openTab === 'personas' ? 'active' : ''}`} onClick={() => setOpenTab('personas')}>Personas</button>
+					<button className={`navbtn ${openTab === 'topics' ? 'active' : ''}`} onClick={() => setOpenTab('topics')}>Topics</button>
+					<button className={`navbtn ${openTab === 'settings' ? 'active' : ''}`} onClick={() => setOpenTab('settings')}>Settings</button>
 				</div>
-
-				{/* Tab content */}
-				{renderTabView()}
-
 			</div>
+
+			{/* Body Element for Displaying Section Content */}
+			<div className="view-body">
+				{renderTabView()}
+			</div>
+
 		</div>
 	);
 };

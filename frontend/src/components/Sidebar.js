@@ -2,7 +2,9 @@ import React, { useContext, useEffect } from 'react';
 
 import { SharedStateContext } from './_SharedStateComponent';
 
+import { ReactComponent as Settings } from './../assets/sliders.svg';
 import { ReactComponent as Icon_Sidebar } from "./../assets/layout-sidebar-inset.svg"
+import { ReactComponent as Icon_Sidebar_Vert } from "./../assets/three-dots-vertical.svg"
 import { ReactComponent as Caret } from "./../assets/caret-down-fill.svg"
 import { ReactComponent as AddClient } from "./../assets/person-fill-add.svg"
 
@@ -27,9 +29,9 @@ export default function Sidebar() {
 
 		// Set selected element to active.
 		try {
-			var newActiveElement = document.getElementById(`nav-all-clients`);
+			var newActiveElement = document.getElementById(`sidebar-all-clients`);
 			if (typeof activeClientID === 'string') {
-				newActiveElement = document.getElementById(`nav-${appletViewState}`);
+				newActiveElement = document.getElementById(`sidebar-${appletViewState}`);
 			} else {
 				newActiveElement = document.getElementById(`sidebar-client-${activeClientID}`);
 			};
@@ -71,7 +73,7 @@ export default function Sidebar() {
 			return clientList;
 				
 		} catch (err) {
-			console.error('Error fetching clients for navbar:', err);
+			console.error('Error fetching clients for sidebarbar:', err);
 			return <div>Error fetching clients</div>;
 		}
 	}
@@ -84,8 +86,21 @@ export default function Sidebar() {
 			<nav id="sidebar" className="collapse collapse-horizontal">
 				<div id="sidebar-wrapper">
 
+
+					{/* Sample Sidebar Section */}
+					<div id="sidebar-header">
+						
+						{/* SETTINGS BUTTON */}
+						<div id="sidebar-settings" onClick={() => {setAppletViewState("settings"); setActiveClientID("settings");}}><Settings /></div>
+
+						{/* SIDEBAR TOGGLE */}
+						<div id="sidebar-toggle-closer" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-expanded="false" aria-controls="sidebar"><Icon_Sidebar /></div>
+
+					</div>
+
+
 					{/* Display Client List */}
-					<div id="nav-clients" className="sidebar-section">
+					<div id="sidebar-clients" className="sidebar-section">
 						
 						<div className="sidebar-item collapsed" data-bs-toggle="collapse" data-bs-target="#client-list" aria-expanded="false" aria-controls="client-list">
 							<div className="sidebar-item-name">Clients</div>
@@ -95,7 +110,7 @@ export default function Sidebar() {
 						<div id="client-list" className="sidebar-item collapse">
 
 							{/* Button for 'all clients' view */}
-							<div id="nav-all-clients" className="sidebar-subitem activeSidebar" onClick={() => {setAppletViewState('all-clients'); setActiveClientID("all-clients");}}>
+							<div id="sidebar-all-clients" className="sidebar-subitem activeSidebar" onClick={() => {setAppletViewState('all-clients'); setActiveClientID("all-clients");}}>
 								<div className="sidebar-active-state-wrapper">
 									<div className="active-state-icon"><Caret /></div>
 								</div>
@@ -107,7 +122,7 @@ export default function Sidebar() {
 							<div className="sidebar-content">{MountNavbar()}</div>
 							
 							{/* Button for 'add new client' */}
-							<div id="nav-new-client" className="sidebar-subitem" onClick={() => {setAppletViewState('new-client'); setActiveClientID("new-client");}}>
+							<div id="sidebar-new-client" className="sidebar-subitem" onClick={() => {setAppletViewState('new-client'); setActiveClientID("new-client");}}>
 								<div className="sidebar-active-state-wrapper">
 									<div className="active-state-icon"><Caret /></div>
 								</div>
@@ -116,30 +131,19 @@ export default function Sidebar() {
 							</div>
 						</div>
 					</div>
-					
-
-					{/* Settings Section */}
-					<div id="nav-settings-section" className="sidebar-section">
-						
-						<div id="nav-settings" className="sidebar-item" onClick={() => {setAppletViewState("settings"); setActiveClientID("settings");}}>
-							<div className="sidebar-item-name">Settings</div>
-						</div>
-
-					</div>
-
 
 					{/* Sample Sidebar Section */}
-					<div id="nav-sample-section" className="sidebar-section">
+					<div id="sidebar-sample-section" className="sidebar-section">
 						
-						<div id="nav-X" className="sidebar-item" onClick={() => {setAppletViewState("X"); setActiveClientID("X");}}>
+						<div id="sidebar-X" className="sidebar-item" onClick={() => {setAppletViewState("X"); setActiveClientID("X");}}>
 							<div className="sidebar-item-name">Sample</div>
 						</div>
 
 					</div>
 		
 					{/* Sample Sidebar Footer */}
-					<div id="nav-sample-footer" className="sidebar-section">
-						<div id="nav-Y" className="sidebar-item" onClick={() => {setAppletViewState("Y"); setActiveClientID("Y");}}>
+					<div id="sidebar-sample-footer" className="sidebar-section">
+						<div id="sidebar-Y" className="sidebar-item" onClick={() => {setAppletViewState("Y"); setActiveClientID("Y");}}>
 							<div className="sidebar-item-name">Sample Footer</div>
 						</div>
 					</div>
@@ -147,9 +151,9 @@ export default function Sidebar() {
 				</div>
 			</nav>
 
-
 			{/* SIDEBAR TOGGLE */}
-			<button id="sidebar-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-expanded="false" aria-controls="sidebar"><Icon_Sidebar /></button>
+			<div id="sidebar-toggle-opener" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-expanded="false" aria-controls="sidebar"><Icon_Sidebar_Vert /></div>
+
 		</>
 
 	);

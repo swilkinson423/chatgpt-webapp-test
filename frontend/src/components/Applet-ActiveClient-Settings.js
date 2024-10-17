@@ -48,10 +48,10 @@ export default function AppletActiveClientSettings() {
 	return (
 
 		/* --+--+-- VIEW CLIENT SETTINGS --+--+-- */
-		<div id="tabcontent-settings" className="view-window row tabcontent">
+		<div id="tabcontent-settings" className="view-window vert row tabcontent">
 
 			{/* Section 01 - Topics */}
-			<div className='view-body col-12'>
+			<div className='view-section col-12'>
 				<div className='row'>
 
 					{/* Client Settings */}

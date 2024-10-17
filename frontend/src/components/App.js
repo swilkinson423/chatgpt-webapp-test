@@ -26,15 +26,9 @@ export default function App() {
 
 	return (
 
-		<div id="app-window">
-			<div className="container-fluid h-100">
-				<div className="row h-100">
-
-					<Sidebar />
-					{renderAppletView()}
-					
-				</div>
-			</div>
+		<div id="app-window" className="App">
+			<Sidebar />
+			{renderAppletView()}
 		</div>
 
 	);

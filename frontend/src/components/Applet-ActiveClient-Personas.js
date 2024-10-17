@@ -15,21 +15,21 @@ export default function AppletActiveClientPersonas() {
 	return (
 
 		/* --+--+-- VIEW CLIENT TARGET PERSONAS --+--+-- */
-		<div id="tabcontent-personas" className="view-window row tabcontent">
+		<div id="tabcontent-personas" className="view-window vert tabcontent">
 
 			{/* Section XX - Persona Map */}
 			{personas.map(persona => (
 				
-				<div className="view-body col-12">
-					<div className="row">
+				<div className="view-section">
+
 					
 						{/* Persona Header */}
-						<div className="col-12">
+						<div>
 							<h1>{persona.name}</h1>
 						</div>						
 					
 						{/* Overview */}
-						<div className="view-wrapper col-md-12 col-12">
+						<div className="view-wrapper">
 							<h2>Overview:</h2>
 							<p>{persona.personaSummary}</p>
 							<p>{persona.industrySummary}</p>
@@ -37,11 +37,11 @@ export default function AppletActiveClientPersonas() {
 						</div>
 
 						{/* Competitors */}
-						<div className="view-wrapper col-md-4 col-12">
+						<div className="view-wrapper">
 							<h2>Competitors:</h2>
-							<div className="row">
+							<div className="">
 								{persona.competitors.map((competitor, index) => (
-									<div key={index} className="col-md-12 col-12">
+									<div key={index} className="">
 										<h3>{competitor.name}</h3>
 										<h4>{competitor.description} </h4>
 										<ul>
@@ -54,11 +54,11 @@ export default function AppletActiveClientPersonas() {
 						</div>
 
 						{/* Content Areas */}
-						<div className="view-wrapper col-md-8 col-12">
+						<div className="view-wrapper">
 							<h2>Content Areas:</h2>
-							<div className="row">
+							<div className="">
 								{persona.contentAreas.map((area, index) => (
-									<div key={index} className="col-md-12 col-12">
+									<div key={index} className="">
 										<h3>{area.name}</h3>
 										<ul>
 											{area.examples.map((example, exIndex) => (
@@ -70,7 +70,6 @@ export default function AppletActiveClientPersonas() {
 							</div>
 						</div>
 
-					</div>
 				
 				</div>
 			))}

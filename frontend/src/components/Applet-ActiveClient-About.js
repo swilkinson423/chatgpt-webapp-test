@@ -18,10 +18,10 @@ export default function AppletActiveClientAbout() {
 	return (
 
 		/* --+--+-- VIEW CLIENT INFO --+--+-- */
-		<div id="tabcontent-about" className="view-window row tabcontent">
+		<div id="tabcontent-about" className="view-window vert row tabcontent">
 
 			{/* Section 01 - Company Overview */}
-			<div className='view-body col-12'>
+			<div className='view-section col-12'>
 				<div className='row'>
 
 					{/* Overview Header */}

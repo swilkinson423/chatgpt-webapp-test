@@ -9,31 +9,29 @@ export default function AppletActiveClientTopics() {
 	return (
 
 		/* --+--+-- VIEW CLIENT TOPICS --+--+-- */
-		<div id="tabcontent-topics" className="view-window row tabcontent">
+		<div id="tabcontent-topics" className="view-window vert tabcontent">
 
 			{/* Section 01 - Topics */}
-			<div className='view-body col-12'>
-				<div className='row'>
+			<div className='view-section'>
 
-					{/* Topics Header */}
-					<div className="col-12">
-						<h1>Content Topics</h1>
-					</div>
-
-					{/* Section 01 - ?? */}
-					<div className="view-wrapper col-md-6 col-12">
-						<h2>??</h2>
-					</div>
-
-					{/* Section 02 - ?? */}
-					<div className="view-wrapper col-md-6 col-12">
-						<h2>??</h2>
-					</div>
-
+				{/* Topics Header */}
+				<div className="">
+					<h1>Content Topics</h1>
 				</div>
-			</div>
-			
-		</div>
 
+				{/* Section 01 - ?? */}
+				<div className="view-wrapper">
+					<h2>??</h2>
+				</div>
+
+				{/* Section 02 - ?? */}
+				<div className="view-wrapper">
+					<h2>??</h2>
+				</div>
+
+			</div>
+	
+
+		</div>
 	);
 }
