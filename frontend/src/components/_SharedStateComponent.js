@@ -4,8 +4,8 @@ export const SharedStateContext = createContext();
 
 export function SharedStateProvider({ children }) {
 
-	// Used to set the UI colors.
-	const [activeHue, setActiveHue] = useState(200);
+	// Used to define dark mode or light mode.
+	const [isDarkMode, setIsDarkMode] = useState(true);
 
 	// Determines which applet is rendered.
 	const [appletViewState, setAppletViewState] = useState("all-clients");
@@ -24,7 +24,7 @@ export function SharedStateProvider({ children }) {
 
 	return (
 		<SharedStateContext.Provider value={{
-												activeHue, setActiveHue,
+												isDarkMode, setIsDarkMode,
 												appletViewState, setAppletViewState,
 												openTab, setOpenTab,
 												clients, setClients,

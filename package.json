@@ -1,14 +1,15 @@
 {
 	"name": "chatgpt-webapp-test",
 	"version": "1.0.1",
-	"main": "index.js",
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"description": "",
-	"dependencies": {
-	  "cors": "^2.8.5",
-	  "express": "^4.21.0",
-	  "pg": "^8.13.0"
+	"private": true,
+	"scripts": {
+		"start": "concurrently \"npm run start-backend\" \"npm run start-frontend\"",
+		"start-backend": "cd backend && npm start",
+		"start-frontend": "cd frontend && npm start",
+		"build": "cd frontend && npm run build",
+		"test": "cd frontend && npm run test"
+	},
+	"devDependencies": {
+		"concurrently": "^6.2.1"
 	}
-  }
+}

@@ -1,18 +1,24 @@
 import React, { useContext } from 'react';
-import { SharedStateContext } from './_SharedStateComponent';
+
+import { SharedStateContext } from './_SharedStateComponent.js';
+
+import { ThemeProvider, CssBaseline } from '@mui/material';
+import MyTheme from './../styles/theme.js';
+
+import Box from '@mui/material/Box';
+
+import Sidebar from './Sidebar';
 
 import AppletViewAllClient from './Applet-AllClients';
 import AppletViewActiveClient from './Applet-ActiveClient';
 import AppletAddNewClient from './Applet-NewClient';
 import AppletSettings from './Applet-Settings';
 
-import Sidebar from './Sidebar';
-
 export default function App() {
 
-	const { activeHue, appletViewState } = useContext(SharedStateContext);
+	const { appletViewState } = useContext(SharedStateContext);
 
-	document.body.style.setProperty('--color-primary', activeHue);
+	const theme = MyTheme();
 
 	const renderAppletView = () => {
 		switch (appletViewState) {
@@ -25,11 +31,16 @@ export default function App() {
 	};
 
 	return (
+		
+		<ThemeProvider theme={theme}>
+			<CssBaseline />
 
-		<div id="app-window" className="App">
-			<Sidebar />
-			{renderAppletView()}
-		</div>
+				<Box sx={{ display: 'flex' }}>
+					<Sidebar />
+					{renderAppletView()}
+				</Box>
 
+		</ThemeProvider>
+		
 	);
 }

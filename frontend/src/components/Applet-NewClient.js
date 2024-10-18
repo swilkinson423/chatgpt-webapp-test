@@ -45,70 +45,48 @@ export default function AppletAddNewClient() {
 		}
 	};
 
-	const renderTabView = () => {
-
-		return (
-			
-			/* Add New Client */
-			<div id="tabcontent-newclient" className="view-window vert tabcontent">
-				
-				{/* Section 01 - Add New Client */}
-				<div className='view-section'>
-
-						{/* New Client Form Header */}
-						<div>
-							<h1>Company Info:</h1>
-						</div>	
-
-						{/* Client Name */}
-						<h6>Name:</h6>
-						<input
-							type="text"
-							name="name"
-							placeholder="Client Name"
-							className="form-control mb-3"
-							value={newClient.name}
-							onChange={handleInputChange}
-						/>
-
-						{/* Client Website */}
-						<h6>Company Website:</h6>
-						<input
-							type="text"
-							name="website"
-							placeholder="Client Website"
-							className="form-control mb-3"
-							value={newClient.website}
-							onChange={handleInputChange}
-						/>
-
-						{/* Submit Button */}
-						<button className="btn btn-primary" onClick={addClient}>Add Client</button>
-
-
-				</div>
-			
-
-			</div>
-
-		)
-	};
-
 	return (
 
 		/* --+-- ADD NEW CLIENT --+-- */
-		<div id="applet" className="col">
+		<div id="applet">
 
-			{/* Header Element for Section Title & Nav Elements */}
-			<div className="view-header row">
-				<div className="view-header title">Add New Client</div>
+			{/* Title Element */}
+			<h1>Add New Client</h1>
+
+			{/* Body Element */}
+			<div>
+
+				{/* New Client Form Header */}
+				<div>
+					<h2>Company Info:</h2>
+				</div>	
+
+				{/* Client Name */}
+				<h6>Name:</h6>
+				<input
+					type="text"
+					name="name"
+					placeholder="Client Name"
+					className="form-control mb-3"
+					value={newClient.name}
+					onChange={handleInputChange}
+				/>
+
+				{/* Client Website */}
+				<h6>Company Website:</h6>
+				<input
+					type="text"
+					name="website"
+					placeholder="Client Website"
+					className="form-control mb-3"
+					value={newClient.website}
+					onChange={handleInputChange}
+				/>
+
+				{/* Submit Button */}
+				<button className="btn btn-primary" onClick={addClient}>Add Client</button>
+
 			</div>
-
-			{/* Body Element for Displaying Section Content */}
-			<div className="view-body row">
-				{renderTabView()}
-			</div>
-
 
 		</div>
 	);

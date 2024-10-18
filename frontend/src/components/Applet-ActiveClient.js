@@ -3,10 +3,10 @@ import axios from 'axios';
 
 import { SharedStateContext } from './_SharedStateComponent';
 
-import AppletActiveClientAbout from './Applet-ActiveClient-About';
-import AppletActiveClientPersonas from './Applet-ActiveClient-Personas';
-import AppletActiveClientTopics from './Applet-ActiveClient-Topics';
-import AppletActiveClientSettings from './Applet-ActiveClient-Settings';
+import AppletActiveClientAbout from './Applet-ActiveClientExt-About';
+import AppletActiveClientPersonas from './Applet-ActiveClientExt-Personas';
+import AppletActiveClientTopics from './Applet-ActiveClientExt-Topics';
+import AppletActiveClientSettings from './Applet-ActiveClientExt-Settings';
 
 export default function AppletViewActiveClient() {
 
@@ -36,20 +36,20 @@ export default function AppletViewActiveClient() {
 	return (
 
 		/* --+--+-- VIEW ACTIVE CLIENT --+--+-- */
-		<div id="applet" className="">
+		<div id="applet">
 
-			{/* Header Element for Section Title & Nav Elements */}
-			<div className="view-header">
-				<div className="view-header title">{currentClient.name}</div>
-				<div className="view-header navbuttons">
-					<button className={`navbtn ${openTab === 'about' ? 'active' : ''}`} onClick={() => setOpenTab('about')}>About</button>
-					<button className={`navbtn ${openTab === 'personas' ? 'active' : ''}`} onClick={() => setOpenTab('personas')}>Personas</button>
-					<button className={`navbtn ${openTab === 'topics' ? 'active' : ''}`} onClick={() => setOpenTab('topics')}>Topics</button>
-					<button className={`navbtn ${openTab === 'settings' ? 'active' : ''}`} onClick={() => setOpenTab('settings')}>Settings</button>
-				</div>
+			{/* Title Element */}
+			<h1>{currentClient.name}</h1>
+
+			{/* Nav Elements */}
+			<div className="view-header navbuttons">
+				<button className={`navbtn ${openTab === 'about' ? 'active' : ''}`} onClick={() => setOpenTab('about')}>About</button>
+				<button className={`navbtn ${openTab === 'personas' ? 'active' : ''}`} onClick={() => setOpenTab('personas')}>Personas</button>
+				<button className={`navbtn ${openTab === 'topics' ? 'active' : ''}`} onClick={() => setOpenTab('topics')}>Topics</button>
+				<button className={`navbtn ${openTab === 'settings' ? 'active' : ''}`} onClick={() => setOpenTab('settings')}>Settings</button>
 			</div>
 
-			{/* Body Element for Displaying Section Content */}
+			{/* Body Element */}
 			<div className="view-body">
 				{renderTabView()}
 			</div>
