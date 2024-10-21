@@ -5,7 +5,7 @@ import { SharedStateContext } from './_SharedStateComponent';
 
 export default function AppletActiveClientSettings() {
 
-	const { setAppletViewState, setOpenTab, clients, setClients, setActiveClientID, currentClient, setCurrentClient  } = useContext(SharedStateContext);
+	const { setOpenSubMenu, setAppletViewState, setOpenTab, clients, setClients, setActiveClientID, currentClient, setCurrentClient  } = useContext(SharedStateContext);
 
 	const [isEditing, setIsEditing] = useState(false);
 
@@ -39,6 +39,7 @@ export default function AppletActiveClientSettings() {
 			setClients(clients.filter((client) => client.id !== id));
 			setActiveClientID("all-clients");
 			setAppletViewState("all-clients");
+			setOpenSubMenu('none');
 		} catch (err) {
 			console.error('Error deleting client:', err);
 			alert('Failed to delete client. Please try again.');

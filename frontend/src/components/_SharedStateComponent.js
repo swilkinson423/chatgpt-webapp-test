@@ -4,8 +4,17 @@ export const SharedStateContext = createContext();
 
 export function SharedStateProvider({ children }) {
 
-	// Used to define dark mode or light mode.
+	// Determines if theme is set to dark mode or light mode.
 	const [isDarkMode, setIsDarkMode] = useState(true);
+
+	// Determines if Sidebar is collapsed or expanded.
+	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+	// Determines which sidebar sub-menu is open.
+	const [openSubMenu, setOpenSubMenu] = useState('none');
+
+	// Determines which sidebar sub-item is active.
+	const [activeSidebarSubitem, setActiveSidebarSubitem] = useState('none');
 
 	// Determines which applet is rendered.
 	const [appletViewState, setAppletViewState] = useState("all-clients");
@@ -25,6 +34,9 @@ export function SharedStateProvider({ children }) {
 	return (
 		<SharedStateContext.Provider value={{
 												isDarkMode, setIsDarkMode,
+												isSidebarCollapsed, setIsSidebarCollapsed,
+												openSubMenu, setOpenSubMenu,
+												activeSidebarSubitem, setActiveSidebarSubitem,
 												appletViewState, setAppletViewState,
 												openTab, setOpenTab,
 												clients, setClients,

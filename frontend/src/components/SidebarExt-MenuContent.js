@@ -1,91 +1,115 @@
 import React, { useState, useContext } from 'react';
 
+import Stack from '@mui/material/Stack';
+
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Collapse from '@mui/material/Collapse';
-import Stack from '@mui/material/Stack';
 
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
 import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
 
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+
 import { SharedStateContext } from './_SharedStateComponent';
 
-import ClientListSidebar from './SidebarExt-MenuContentExt-ClientList';
-
-const mainListItems = [
-	{ text: 'Home', icon: <HomeRoundedIcon />, view: 'all-clients', children: false },
-	{ text: 'Clients', icon: <PeopleRoundedIcon />, view: 'active-clients', children: <ClientListSidebar /> },
-	{ text: 'Analytics', icon: <AnalyticsRoundedIcon />, view: 'analytics', children: false },
-];
-
-const secondaryListItems = [
-	{ text: 'Settings', icon: <SettingsRoundedIcon />, view: 'settings' },
-];
+import ChildListSidebar from './SidebarExt-MenuContentExt-ChildList';
 
 export default function MenuContent() {
 
-	const { appletViewState, setAppletViewState, setActiveClientID } = useContext(SharedStateContext);
+	const { isSidebarCollapsed, openSubMenu, setOpenSubMenu, appletViewState, setAppletViewState, clients, setActiveClientID } = useContext(SharedStateContext);
 
-	const [open, setOpen] = useState('none');
+	const mainListItems = [
+		{ text: 'Home', icon: <HomeRoundedIcon />, view: 'all-clients', children: false },
+		{ text: 'Clients', icon: <PeopleRoundedIcon />, view: 'active-clients', children: clients },
+		{ text: 'New Client', icon: <PersonAddIcon />, view: 'new-client', children: false },
+		{ text: 'Analytics', icon: <AnalyticsRoundedIcon />, view: 'analytics', children: false },
+	];
+	
+	const secondaryListItems = [
+		{ text: 'Settings', icon: <SettingsRoundedIcon />, view: 'settings' },
+	];
 
-	const handleClick = () => {
-		setOpen(!open);
+	const [anchorEl, setAnchorEl] = useState(null);
+
+	const handlePopoverClick = (event, view) => {
+		setAnchorEl(event.currentTarget);
+		setOpenSubMenu(openSubMenu === view ? 'none' : view);
 	};
 
-	return (
-		<Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
-			
-			<List dense>
-				{mainListItems.map((item, index) => (
-					<ListItem key={index} disablePadding sx={{ display: 'block' }}>
-						{!item.children 
-						? 
-						<>	
-							{/* Normal menu item without Children*/}
-							<ListItemButton selected={appletViewState === item.view} onClick={() => { setAppletViewState(item.view); setActiveClientID(item.view); }}>
-								<ListItemIcon>{item.icon}</ListItemIcon>
-								<ListItemText primary={item.text} />
-							</ListItemButton>
-						</>
-						:
-						<>
-							{/* Expandable menu item with Children*/}
-							<ListItemButton selected={appletViewState === item.view} onClick={() => {open === item.view ? setOpen('none') : setOpen(item.view) }}>
-								<ListItemIcon>{item.icon}</ListItemIcon>
-								<ListItemText primary={item.text} />
-								{open === item.view ? <ExpandLess /> : <ExpandMore />}
-							</ListItemButton>
-							
-							<Collapse in={open === item.view} timeout="auto" unmountOnExit>
-								<List component="div" disablePadding>
-									
-									{item.children}
 
-								</List>
-							</Collapse>
-						</>
-						}
-					</ListItem>
+	return (
+		<Stack sx={{ flexGrow: 1, justifyContent: 'space-between' }}>
+
+			<List dense>
+
+				{mainListItems.map((item, index) => (
+
+					<>
+						<ListItem key={index} disablePadding sx={{ display: 'block' }}>
+
+							{!item.children
+								?
+								<>
+									{/* Menu items without Children*/}
+									<ListItemButton 
+										selected={appletViewState === item.view} 
+										onClick={() => { setAppletViewState(item.view); setActiveClientID(item.view); setOpenSubMenu('none'); }}
+									>
+										<ListItemIcon>{item.icon}</ListItemIcon>
+										{!isSidebarCollapsed && <ListItemText primary={item.text} />}
+
+									</ListItemButton>
+								</>
+								:
+								<>
+									{/* Menu items with Children*/}
+									<ListItemButton
+										id={'sidebar-icon-' + item.text}
+										selected={appletViewState === item.view}
+										onClick={(event) => handlePopoverClick(event, item.view)}
+										aria-controls={openSubMenu === item.view ? 'sidebar-menu-' + item.text : undefined}
+										aria-haspopup="true"
+										aria-expanded={openSubMenu === item.view ? 'true' : undefined}
+									>
+										<ListItemIcon>{item.icon}</ListItemIcon>
+										{!isSidebarCollapsed
+										?
+											<>
+											<ListItemText primary={item.text} />
+											{openSubMenu === item.view ? <ExpandLess /> : <ExpandMore />}
+											</>
+										:
+										 	<></>
+										}
+									
+									</ListItemButton>
+
+									<ChildListSidebar text={item.text} icon={item.icon} view={item.view} children={item.children} anchorEl={anchorEl} />
+								</>
+							}
+
+						</ListItem>
+					</>
+
 				))}
 			</List>
+
 
 			<List dense>
 				{secondaryListItems.map((item, index) => (
 					<ListItem key={index} disablePadding sx={{ display: 'block' }}>
-
 						<ListItemButton selected={appletViewState === item.view} onClick={() => { setAppletViewState(item.view); setActiveClientID(item.view); }}>
 							<ListItemIcon>{item.icon}</ListItemIcon>
-							<ListItemText primary={item.text} />
+							{!isSidebarCollapsed && <ListItemText primary={item.text} />}
 						</ListItemButton>
-
 					</ListItem>
 				))}
 			</List>

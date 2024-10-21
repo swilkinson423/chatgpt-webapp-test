@@ -5,7 +5,7 @@ import { SharedStateContext } from './_SharedStateComponent';
 
 export default function AppletAddNewClient() {
 
-	const { setClients, setAppletViewState, setActiveClientID } = useContext(SharedStateContext);
+	const { setClients, setOpenSubMenu, setActiveSidebarSubitem, setAppletViewState, setActiveClientID } = useContext(SharedStateContext);
 
 	const newClientTemplate = {
 		name: '', 
@@ -36,6 +36,8 @@ export default function AppletAddNewClient() {
 			const postNew = await axios.post(`http://localhost:3000/clients/`, newClient);
 			const response = await axios.get(`http://localhost:3000/clients/`);
 				setActiveClientID(postNew.data.id);
+				setOpenSubMenu('active-clients');
+				setActiveSidebarSubitem('active-clients-'+postNew.data.id);
 				setAppletViewState('active-clients');
 				setClients(response.data);
 				setNewClient(newClientTemplate);
