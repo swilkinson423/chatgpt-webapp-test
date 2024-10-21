@@ -1,6 +1,8 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 
+import './styles/index.css';
+
 import { SharedStateProvider } from './components/_SharedStateComponent';
 
 import App from './components/App';

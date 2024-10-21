@@ -7,8 +7,8 @@ export default function AppletSettings(){
 	const { isDarkMode, setIsDarkMode } = useContext(SharedStateContext);
 	
 	return (
-		/* --+-- ADD NEW CLIENT --+-- */
-		<div id="applet">
+		
+		<>
 
 			{/* Title Element */}
 			<h1>Settings</h1>
@@ -17,6 +17,6 @@ export default function AppletSettings(){
 			<h2>Change UI Color</h2>
 			<button onClick={() => setIsDarkMode(!isDarkMode)}>{isDarkMode ? 'Turn Dark Mode Off': 'Turn Dark Mode On'}</button>
 
-		</div>
+		</>
 	);
 };

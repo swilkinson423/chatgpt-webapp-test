@@ -1,0 +1,225 @@
+/* ---------------------------------- */
+/* --- Global styles  --------------- */
+/* ---------------------------------- */
+:root {
+	--sidebar-width-expanded: 240px;
+	--sidebar-width-collapsed: 60px;
+
+	--sidebar-background-color-dark: #333;
+	--sidebar-background-color-light: #f4f4f4;
+	
+	--sidebar-icon-color: grey;
+	--sidebar-text-color: grey;
+	--sidebar-highlight-color: orange;
+	--sidebar-childlist-color: grey;
+	--sidebar-childlist-active-color: orange;
+
+	--applet-background-color-dark: #555555;
+	--applet-background-color-light: #ffffff;
+	
+}
+
+html {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+		'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+		sans-serif;
+	font-size: 16px;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+body {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+code {
+	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+		monospace;
+}
+
+#app {
+	display: flex;
+	height: 100%;
+}
+
+/* ---------------------------------- */
+/* --- Sidebar styles  -------------- */
+/* ---------------------------------- */
+
+/* Sidebar Drawer */
+#sidebar {
+	flex-shrink: 0;
+	box-sizing: border-box;
+	display: block;
+}
+
+	#sidebar .MuiDrawer-paper {
+		padding-top: 10px;
+	}
+
+	#sidebar.dark .MuiPaper-root {
+		background-color: var(--sidebar-background-color-dark);
+		color: white;
+	}
+
+	#sidebar.light .MuiPaper-root {
+		background-color: var(--sidebar-background-color-light);
+		color: black;
+	}
+
+	#sidebar.expanded, #sidebar.expanded .MuiPaper-root {
+		width: var(--sidebar-width-expanded);
+	}
+
+	#sidebar.collapsed, #sidebar.collapsed .MuiPaper-root {
+		width: var(--sidebar-width-collapsed);
+	}
+	
+/* Sidebar Toggle */
+#sidebar-toggle * {
+	color: var(--sidebar-icon-color);
+	border: none !important;
+}
+
+/* Sidebar Content */
+#sidebar-content {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+/* Sidebar Menu Content */
+#sidebar-menucontent {
+	flex-grow: 1;
+	justify-content: space-between;
+	
+}
+
+/* Sidebar Menu Item */
+.sidebar-menuitem {
+	background-color: transparent;
+}
+
+	.sidebar-menuitem.Mui-selected {
+		background-color: var(--sidebar-highlight-color) !important;
+	}
+
+	.sidebar-menuitem .MuiListItemIcon-root * {
+		color: var(--sidebar-icon-color);
+	}
+
+	.sidebar-menuitem .expander {
+		color: var(--sidebar-icon-color);
+	}
+
+	.sidebar-menuitem .MuiListItemText-root {
+		color: var(--sidebar-text-color);
+	}
+
+
+/* Sidebar Child List - Collapsible Menu */
+.MuiCollapse-root.sidebar-childlist {
+	margin-left: 10px;
+	padding-left: 0px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+	.MuiCollapse-root .sidebar-childitem {
+		padding: 0;
+		position: relative;
+	}
+	
+		.MuiCollapse-root .sidebar-childitem::before {
+			z-index: 1;
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 18px;
+			width: 1px;
+			height: 100%;
+			background-color: var(--sidebar-childlist-color);
+		}
+	
+		.MuiCollapse-root .sidebar-childitem:last-of-type::before {
+			height: 50%;
+		}
+
+		.MuiCollapse-root .sidebar-childitem .MuiListItemIcon-root {
+			min-width: auto;
+			position: relative;
+			margin-left: 11px;
+			color: unset;
+		}
+
+		.MuiCollapse-root .sidebar-childitem .MuiListItemIcon-root * {
+			z-index: 2;
+			width: 14px;
+			height: 14px;
+		}
+
+		.MuiCollapse-root .sidebar-childitem .MuiListItemIcon-root .expander * {
+			color: var(--sidebar-icon-color);
+		}
+	
+		.MuiCollapse-root .sidebar-childitem .MuiListItemText-primary {
+			margin-left: 16px;
+			color: var(--sidebar-text-color);
+		}
+	
+
+/* Sidebar Child List - Popover Menu */
+.MuiPopover-root.sidebar-childlist .MuiPopover-paper {
+	padding: 0;
+	margin-top: 10px;
+	margin-left: -10px;
+	min-height: 100px;
+	max-height: 300px;
+	max-width: 200px;
+	overflow-x: hidden;
+	overflow-y: auto;	
+}
+
+	.MuiPopover-root .sidebar-childitem * {
+		color: var(--sidebar-text-color);
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	.MuiPopover-root .sidebar-childitem .MuiListItemText-primary {
+		color: var(--sidebar-text-color);
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+
+
+/* ---------------------------------- */
+/* --- Applet styles  --------------- */
+/* ---------------------------------- */
+
+#applet {
+	height: 100%;
+	width: 100%;
+	padding: 20px;
+}
+
+	#applet.dark {
+		background-color: var(--applet-background-color-dark);
+		color: white;
+	}
+
+	#applet.light {
+		background-color: var(--applet-background-color-light);
+		color: black;
+	}

@@ -6,54 +6,27 @@ import { SharedStateContext } from './../components/_SharedStateComponent';
 
 export default function MyTheme() {
 
+	// Get the shared state of dark or light mode
 	const { isDarkMode } = useContext(SharedStateContext);
-
-	// Light Mode Colors
-	const lightThemeColors = {
-		mode: 'light',
-		primary: {
-			main: '#455A64',
-		},
-		secondary: {
-			main: '#FF5722',
-		},
-		background: {
-			default: '#f0f0f0',
-			paper: '#eeeeee',
-		},
-		text: {
-			primary: '#212121',
-			secondary: '#757575',
-		},
-		divider: '#BDBDBD',
-	};
-
-	// Dark Mode Colors
-	const darkThemeColors = {
-		mode: 'dark',
-		primary: {
-			main: '#455A64',
-		},
-		secondary: {
-			main: '#FF5722',
-		},
-		background: {
-			default: '#2f2f2f',
-			highlightlight: '#2a2a2a',
-			highlightdark: '#333333',
-			paper: '#1f1f1f',
-		},
-		text: {
-			primary: '#FFFFFF',
-			secondary: '#757575',
-		},
-		divider: '#BDBDBD',
-	};
-
+	
 	// Main Theme Options
 	const theme = createTheme({
 		cssVariables: true,
-		palette: isDarkMode ? darkThemeColors : lightThemeColors,
+		palette: {
+			mode: isDarkMode ? 'dark' : 'light',			
+			background: {
+				default: isDarkMode ? '#4E5454' : '#E5E7E7',
+				paper: isDarkMode ? '#252C2F' : '#CBCFCF',
+			},
+			primary: {
+				main: '#FF7F00',
+				contrastText: '#fff',
+			},
+			secondary: {
+				main: '#FF6666',
+				contrastText: '#000',
+			},
+		},
 		typography: {
 			fontFamily: 'Roboto, Arial, sans-serif',
 		},

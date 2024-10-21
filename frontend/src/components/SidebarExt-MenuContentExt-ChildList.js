@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import { useTheme } from '@mui/material';
 
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -15,8 +14,6 @@ import CircleIcon from '@mui/icons-material/Circle';
 import { SharedStateContext } from './_SharedStateComponent';
 
 export default function ChildListSidebar({ text, icon, view, children, anchorEl }) {
-
-	const theme = useTheme();
 
 	const { isSidebarCollapsed, openSubMenu, setOpenSubMenu, activeSidebarSubitem, setActiveSidebarSubitem, setAppletViewState, activeClientID, setActiveClientID } = useContext(SharedStateContext);
 
@@ -45,68 +42,15 @@ export default function ChildListSidebar({ text, icon, view, children, anchorEl 
 
 				{!isSidebarCollapsed
 				?
-					<Collapse
-						in={openSubMenu === view}
-						timeout="auto"
-						unmountOnExit
-						sx={{
-							backgroundColor: 'background.highlightlight',
-							ml: 1,
-							overflow: 'hidden',
-							textOverflow: 'ellipsis'
-						}}
-					>
+					<Collapse className='sidebar-childlist' in={openSubMenu === view} timeout="auto" unmountOnExit >
 						<List component="div" disablePadding>
 							
 							{childList.map((child) => (
-								<ListItemButton
-									key={"listitembutton-" + child.id}
-									onClick={() => {
-										setActiveSidebarSubitem(''+view+'-'+child.id+'');
-										subitemAction(view, child.id);
-									}}
-									sx={{
-										p: 0,
-										position: 'relative',
-										'&::before': {
-											content: '""',
-											position: 'absolute',
-											top: 0,
-											left: '18px',
-											width: '1px',
-											height: '100%',
-											backgroundColor: theme.palette.primary.main,
-										},
-										'&:last-of-type::before': {
-											height: '50%',
-										},
-									}}
-								>
-									<ListItemIcon
-										sx={{
-											minWidth: 'auto',  // Remove default padding from ListItemIcon
-											position: 'relative',
-											ml: '11px', // Adjust to align with the line
-										}}
-									>
-										<CircleIcon
-											
-											sx={{
-												zIndex: 1,
-												width: '14px',
-												height: '14px',
-												color: activeSidebarSubitem === ''+view+'-'+child.id+'' ? theme.palette.secondary.main : theme.palette.primary.main,
-											}}
-										/>
+								<ListItemButton className='sidebar-childitem' key={"listitembutton-" + child.id} onClick={() => { setActiveSidebarSubitem(''+view+'-'+child.id+''); subitemAction(view, child.id); }} >
+									<ListItemIcon>
+										<CircleIcon sx={{ color: activeSidebarSubitem === ''+view+'-'+child.id+'' ? 'var(--sidebar-childlist-active-color)' : 'var(--sidebar-childlist-color)' }}/>
 									</ListItemIcon>
-
-									<ListItemText
-										primary={child.name}
-										key={"listitemname-" + child.id}
-										sx={{
-											ml: 1,  // Adjust this value to reduce space between the circle and text
-										}}
-									/>
+									<ListItemText primary={child.name} key={"listitemname-" + child.id} />
 								</ListItemButton>
 							))}
 
@@ -114,52 +58,12 @@ export default function ChildListSidebar({ text, icon, view, children, anchorEl 
 
 					</Collapse>
 				:
-					<Popover
-						id={"sidebar-popover-" + text}
-						anchorEl={anchorEl}
-						open={openSubMenu === view}
-						onClose={() => setOpenSubMenu('none')}
-						anchorOrigin={{
-							vertical: 'top',
-							horizontal: 'right',
-						}}
-						transformOrigin={{
-							vertical: 'top',
-							horizontal: 'left',
-						}}
-						slotProps={{
-							paper: {
-								sx: {
-									p: 1,
-									mt: 1,
-									ml: -1,
-									maxHeight: '500px',  // Set a max-height for the popover
-									overflowY: 'auto',   // Allow scrolling if content exceeds max-height
-									backgroundColor: 'background.highlightlight'
-								}
-							}
-						}}
-					>
+					<Popover id={"sidebar-popover-" + text} className='sidebar-childlist' open={openSubMenu === view} onClose={() => setOpenSubMenu('none')} anchorEl={anchorEl} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} transformOrigin={{ vertical: 'top', horizontal: 'left' }}>
+						
 						{childList.map((child) => (
-							
-							<ListItemButton
-								key={"listitembutton-" + child.id}
-								onClick={() => {
-									setActiveSidebarSubitem(''+view+'-'+child.id+'');
-									subitemAction(view, child.id);
-									setOpenSubMenu('none');
-								}}
-							>
-
-								<ListItemText
-									primary={child.name}
-									key={"listitemname-" + child.id}
-									sx={{
-										ml: 1,  // Adjust this value to reduce space between the circle and text
-									}}
-								/>
+							<ListItemButton className='sidebar-childitem' key={"listitembutton-" + child.id} onClick={() => { setActiveSidebarSubitem(''+view+'-'+child.id+''); subitemAction(view, child.id); setOpenSubMenu('none'); }} >
+								<ListItemText primary={child.name} key={"listitemname-" + child.id}/>
 							</ListItemButton>
-
 						))}
 
 					</Popover>

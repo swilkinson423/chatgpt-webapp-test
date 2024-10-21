@@ -49,9 +49,7 @@ export default function AppletAddNewClient() {
 
 	return (
 
-		/* --+-- ADD NEW CLIENT --+-- */
-		<div id="applet">
-
+		<>
 			{/* Title Element */}
 			<h1>Add New Client</h1>
 
@@ -90,6 +88,6 @@ export default function AppletAddNewClient() {
 
 			</div>
 
-		</div>
+		</>
 	);
 };

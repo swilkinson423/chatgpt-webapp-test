@@ -2,9 +2,6 @@ import React, { useContext } from 'react';
 
 import { SharedStateContext } from './_SharedStateComponent.js';
 
-import { ThemeProvider, CssBaseline } from '@mui/material';
-import MyTheme from './../styles/theme.js';
-
 import Box from '@mui/material/Box';
 
 import Sidebar from './Sidebar';
@@ -16,9 +13,7 @@ import AppletSettings from './Applet-Settings';
 
 export default function App() {
 
-	const { appletViewState } = useContext(SharedStateContext);
-
-	const theme = MyTheme();
+	const { isDarkMode, appletViewState } = useContext(SharedStateContext);
 
 	const renderAppletView = () => {
 		switch (appletViewState) {
@@ -31,16 +26,13 @@ export default function App() {
 	};
 
 	return (
-		
-		<ThemeProvider theme={theme}>
-			<CssBaseline />
 
-				<Box sx={{ display: 'flex' }}>
-					<Sidebar />
-					{renderAppletView()}
-				</Box>
+		<Box id='app'>
+			<Sidebar />
+			<Box id='applet' className={`${isDarkMode ? 'dark' : 'light'}`}>
+				{renderAppletView()}
+			</Box>
+		</Box>
 
-		</ThemeProvider>
-		
 	);
 }

@@ -35,8 +35,7 @@ export default function AppletViewActiveClient() {
 
 	return (
 
-		/* --+--+-- VIEW ACTIVE CLIENT --+--+-- */
-		<div id="applet">
+		<>
 
 			{/* Title Element */}
 			<h1>{currentClient.name}</h1>
@@ -54,6 +53,6 @@ export default function AppletViewActiveClient() {
 				{renderTabView()}
 			</div>
 
-		</div>
+		</>
 	);
 };

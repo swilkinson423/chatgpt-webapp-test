@@ -24,9 +24,7 @@ export default function AppletViewAllClient() {
 
 	return (
 
-		/* --+--+-- VIEW ALL CLIENTS --+--+-- */
-		<div id="applet">
-
+		<>
 			{/* Title Element */}
 			<h1>All Clients</h1>
 
@@ -39,7 +37,6 @@ export default function AppletViewAllClient() {
 				</div>
 
 			))}
-
-		</div>
+		</>
 	);
 };
