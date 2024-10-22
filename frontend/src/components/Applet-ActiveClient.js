@@ -1,6 +1,12 @@
 import React, { useContext, useEffect } from 'react';
 import axios from 'axios';
 
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+
 import { SharedStateContext } from './_SharedStateComponent';
 
 import AppletActiveClientAbout from './Applet-ActiveClientExt-About';
@@ -14,7 +20,8 @@ export default function AppletViewActiveClient() {
 
     useEffect(() => {
 		setClient();
-		setOpenTab("about");
+		setOpenTab("About");
+		setTabID(0);
     }, [activeClientID]);
 
 	const setClient = async () => {
@@ -22,36 +29,63 @@ export default function AppletViewActiveClient() {
 		setCurrentClient(response.data);
 	};
 
-	const renderTabView = () => {
+	// Determines which tab is active
+	const [tabID, setTabID] = React.useState(0);
 
-		switch (openTab) {
-			case 'about': return <AppletActiveClientAbout />;
-			case 'personas': return <AppletActiveClientPersonas />;
-			case 'topics': return <AppletActiveClientTopics />;
-			case 'settings': return <AppletActiveClientSettings />;
-			default: return null;
-		}
-	};
+	const handleTabChange = (event, newValue) => { // 'newValue' is the index of the tab, provided by Tabs component
+		setTabID(newValue);
+	}
+
+	const viewTabsMain = [
+		{ text: 'About', tab: <AppletActiveClientAbout/>},
+		{ text: 'Personas', tab: <AppletActiveClientPersonas/>},
+		{ text: 'Topics', tab: <AppletActiveClientTopics /> },
+	];
+	
+	const viewTabsSecondary = [
+		{ text: 'Settings', tab: <AppletActiveClientSettings/>},
+	];
 
 	return (
 
 		<>
 
-			{/* Title Element */}
-			<h1>{currentClient.name}</h1>
+			{/* Header Element */}
+			<Stack className='view-header'>
+				
+				{/* Title Element */}
+				<h1 sx={{ display: 'block' }}>{currentClient.name}</h1>
+				
+				{/* Tabs Element */}
+				<Tabs value={tabID} onChange={handleTabChange}>
+					
+					{/* Main Tab Elements */}
+					{viewTabsMain.map((item, index) => (
+						<Tab key={index} label={item.text} onClick={() => setOpenTab(item.text)}/>
+					))}
 
-			{/* Nav Elements */}
-			<div className="view-header navbuttons">
-				<button className={`navbtn ${openTab === 'about' ? 'active' : ''}`} onClick={() => setOpenTab('about')}>About</button>
-				<button className={`navbtn ${openTab === 'personas' ? 'active' : ''}`} onClick={() => setOpenTab('personas')}>Personas</button>
-				<button className={`navbtn ${openTab === 'topics' ? 'active' : ''}`} onClick={() => setOpenTab('topics')}>Topics</button>
-				<button className={`navbtn ${openTab === 'settings' ? 'active' : ''}`} onClick={() => setOpenTab('settings')}>Settings</button>
-			</div>
+					{/* Spacer Element */}
+					<Tab className='tab-spacer' sx={{flexGrow: 1}} disabled ></Tab>
+					
+					{/* Secondary Tab Elements */}
+					{viewTabsSecondary.map((item, index) => (
+						<Tab key={index} label={item.text} onClick={() => setOpenTab(item.text)}/>
+					))}
+					
+				</Tabs>
+
+			</Stack>
 
 			{/* Body Element */}
-			<div className="view-body">
-				{renderTabView()}
-			</div>
+			<Box className="view-body">
+				
+				{viewTabsMain.concat(viewTabsSecondary).map((item, index) => (item.text === openTab &&
+					<div key={index}>
+						{item.tab}
+					</div>
+				))}
+
+			</Box>
 
 		</>
 	);

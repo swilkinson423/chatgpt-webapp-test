@@ -1,6 +1,9 @@
 import React, { useContext, useEffect } from 'react';
 import axios from 'axios';
 
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+
 import { SharedStateContext } from './_SharedStateComponent';
 
 export default function AppletViewAllClient() {
@@ -24,19 +27,24 @@ export default function AppletViewAllClient() {
 
 	return (
 
-		<>
+		<Box id='applet'>
+
 			{/* Title Element */}
-			<h1>All Clients</h1>
+			<Stack className='view-header'>
+				<h1>All Clients</h1>
+			</Stack>
 
+			
 			{/* Body Element */}
-			{clients.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1 ).map((client, index) => (		
+			<Box className='view-body'>
+				{clients.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1 ).map((client) => (		
+					<div key={"card" + client.id}>
+						<h2 key={"name-" + client.id}>{client.name}</h2>
+						<p key={"description-" + client.id}>{client.description}</p>
+					</div>
+				))}
+			</Box>
 
-				<div key={"card" + client.id}>
-					<h2 key={"name-" + client.id}>{client.name}</h2>
-					<p key={"description-" + client.id}>{client.description}</p>
-				</div>
-
-			))}
-		</>
+		</Box>
 	);
 };

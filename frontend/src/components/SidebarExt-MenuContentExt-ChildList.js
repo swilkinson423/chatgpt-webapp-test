@@ -48,7 +48,7 @@ export default function ChildListSidebar({ text, icon, view, children, anchorEl 
 							{childList.map((child) => (
 								<ListItemButton className='sidebar-childitem' key={"listitembutton-" + child.id} onClick={() => { setActiveSidebarSubitem(''+view+'-'+child.id+''); subitemAction(view, child.id); }} >
 									<ListItemIcon>
-										<CircleIcon sx={{ color: activeSidebarSubitem === ''+view+'-'+child.id+'' ? 'var(--sidebar-childlist-active-color)' : 'var(--sidebar-childlist-color)' }}/>
+										<CircleIcon className={ `${activeSidebarSubitem === ''+view+'-'+child.id+'' && 'childicon-active'}`} />
 									</ListItemIcon>
 									<ListItemText primary={child.name} key={"listitemname-" + child.id} />
 								</ListItemButton>

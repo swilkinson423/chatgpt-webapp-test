@@ -13,7 +13,7 @@ import AppletSettings from './Applet-Settings';
 
 export default function App() {
 
-	const { isDarkMode, appletViewState } = useContext(SharedStateContext);
+	const { isDarkMode, isSidebarCollapsed, appletViewState } = useContext(SharedStateContext);
 
 	const renderAppletView = () => {
 		switch (appletViewState) {
@@ -27,11 +27,12 @@ export default function App() {
 
 	return (
 
-		<Box id='app'>
+		<Box id='app' className={`${isDarkMode ? 'dark' : 'light'}`}>
 			<Sidebar />
-			<Box id='applet' className={`${isDarkMode ? 'dark' : 'light'}`}>
+			<Box id='applet' className={`${isSidebarCollapsed ? 'collapsed' : 'expanded'}`}>
 				{renderAppletView()}
 			</Box>
+			
 		</Box>
 
 	);

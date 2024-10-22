@@ -20,7 +20,7 @@ export function SharedStateProvider({ children }) {
 	const [appletViewState, setAppletViewState] = useState("all-clients");
 
 	// Determines which active client tab is open.
-	const [openTab, setOpenTab] = useState("about");
+	const [openTab, setOpenTab] = useState("About");
 
 	// Holds the active client list
 	const [clients, setClients] = useState([]);

@@ -1,7 +1,5 @@
 import React, { useState, useContext } from 'react';
 
-// import { useTheme } from '@mui/material';
-
 import Stack from '@mui/material/Stack';
 
 import List from '@mui/material/List';
@@ -61,19 +59,19 @@ export default function MenuContent() {
 							<>
 								{/* Menu items without Children*/}
 								<ListItemButton className='sidebar-menuitem' selected={appletViewState === item.view} onClick={() => { setAppletViewState(item.view); setActiveClientID(item.view); setActiveSidebarSubitem('none'); setOpenSubMenu('none'); }}>
-									<ListItemIcon>{item.icon}</ListItemIcon>
+									<ListItemIcon style={{ marginLeft: isSidebarCollapsed ? 'auto' : 'auto', marginRight: isSidebarCollapsed ? 'auto' : '5px' }}>{item.icon}</ListItemIcon>
 									{!isSidebarCollapsed && <ListItemText primary={item.text}/>}
 								</ListItemButton>
 							</>
 							:
 							<>
 								{/* Menu items with Children*/}
-								<ListItemButton id={'sidebar-icon-' + item.text} className='sidebar-menuitem' selected={appletViewState === item.view} onClick={(event) => handlePopoverClick(event, item.view)} aria-controls={openSubMenu === item.view ? 'sidebar-menu-' + item.text : undefined} aria-haspopup="true" aria-expanded={openSubMenu === item.view ? 'true' : undefined}>
-									<ListItemIcon>{item.icon}</ListItemIcon>
+								<ListItemButton className={`sidebar-menuitem ${openSubMenu === item.view && 'open'}`} selected={appletViewState === item.view} onClick={(event) => handlePopoverClick(event, item.view)} aria-controls={openSubMenu === item.view ? 'sidebar-menu-' + item.text : undefined} aria-haspopup="true" aria-expanded={openSubMenu === item.view ? 'true' : undefined}>
+									<ListItemIcon style={{ marginLeft: isSidebarCollapsed ? 'auto' : 'auto', marginRight: isSidebarCollapsed ? 'auto' : '5px' }}>{item.icon}</ListItemIcon>
 									{!isSidebarCollapsed &&
 										<>
 										<ListItemText primary={item.text}/>
-										{openSubMenu === item.view ? <ExpandLess className='expander'/> : <ExpandMore className='sidebar-menuicon expander'/>}
+										<ListItemText className='expander' primary={openSubMenu === item.view ? <ExpandLess/> : <ExpandMore/>}/>
 										</>
 									}
 								</ListItemButton>

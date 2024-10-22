@@ -1,7 +1,6 @@
 // ----------------------------------------------
 // -------- EXPRESS SERVER SETUP ----------------
 // ----------------------------------------------
-
 const express = require('express');
 const app = express();
 const port = 3000;
@@ -9,7 +8,11 @@ const port = 3000;
 // Middleware to parse JSON
 app.use(express.json());
 
-app.listen(port, () => {
+app.listen(port, (err) => {
+	if (err) {
+		console.error('Error starting the server:', err);
+		process.exit(1); // Exit the process with failure code
+	}
 	console.log(`App running on http://localhost:${port}`);
 });
 
@@ -24,17 +27,8 @@ app.use(cors());
 // ----------------------------------------------
 // -------- NODE <> POSTGRESS CONNECTION --------
 // ----------------------------------------------
-
-const { Pool } = require('pg');
-const pool = new Pool({
-	user: 'postgres',
-	host: 'localhost',
-	database: 'fullstack_db',
-	password: '2524',
-	port: 5432,
-});
-
 // Example query to test the connection
+const { pool } = require('./pool');
 pool.query('SELECT NOW()', (err, res) => {
 	if (err) {
 		console.error('Error connecting to the database', err);
@@ -44,6 +38,34 @@ pool.query('SELECT NOW()', (err, res) => {
 });
 
 
+// ----------------------------------------------
+// -------- SERVER-SIDE URL SCRAPING ------------
+// ----------------------------------------------
+const axios = require('axios');
+const { load } = require('cheerio');
+const { JSDOM } = require('jsdom');
+
+app.get('/fetch-meta', async (req, res) => {
+	const url = req.query.url;
+
+	try {
+		const { data } = await axios.get(url);
+		const $ = load(data);
+
+		const metaTitle = $('meta[property="og:title"]').attr('content') || $('title').text();
+		const metaDescription = $('meta[property="og:description"]').attr('content') || $('meta[name="description"]').attr('content');
+		let metaImage = $('meta[property="og:image"]').attr('content') || $('img').first().attr('src');
+
+		res.json({
+			title: metaTitle,
+			description: metaDescription,
+			image: metaImage,
+		});
+
+	} catch (err) {
+		res.status(500).json({ error: 'Failed to fetch metadata' });
+	}
+});
 
 // ----------------------------------------------
 // -------- RESTful Endpoints -------------------

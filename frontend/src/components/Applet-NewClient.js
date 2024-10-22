@@ -1,6 +1,9 @@
 import React, { useContext, useState } from 'react';
 import axios from 'axios';
 
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+
 import { SharedStateContext } from './_SharedStateComponent';
 
 export default function AppletAddNewClient() {
@@ -49,12 +52,16 @@ export default function AppletAddNewClient() {
 
 	return (
 
-		<>
+		<Box id='applet'>
+			
 			{/* Title Element */}
-			<h1>Add New Client</h1>
+			<Stack className='view-header'>
+				<h1>Add New Client</h1>
+			</Stack>
+
 
 			{/* Body Element */}
-			<div>
+			<Box className='view-body'>
 
 				{/* New Client Form Header */}
 				<div>
@@ -84,10 +91,10 @@ export default function AppletAddNewClient() {
 				/>
 
 				{/* Submit Button */}
-				<button className="btn btn-primary" onClick={addClient}>Add Client</button>
+				<button onClick={addClient}>Add Client</button>
 
-			</div>
+			</Box>
 
-		</>
+		</Box>
 	);
 };
