@@ -10,7 +10,7 @@ import Tab from '@mui/material/Tab';
 import { SharedStateContext } from './_SharedStateComponent';
 
 import AppletActiveClientAbout from './Applet-ActiveClientExt-About';
-import AppletActiveClientPersonas from './Applet-ActiveClientExt-Personas';
+import AppletActiveClientDocs from './Applet-ActiveClientExt-Docs';
 import AppletActiveClientTopics from './Applet-ActiveClientExt-Topics';
 import AppletActiveClientSettings from './Applet-ActiveClientExt-Settings';
 
@@ -21,7 +21,6 @@ export default function AppletViewActiveClient() {
     useEffect(() => {
 		setClient();
 		setOpenTab("About");
-		setTabID(0);
     }, [activeClientID]);
 
 	const setClient = async () => {
@@ -29,19 +28,14 @@ export default function AppletViewActiveClient() {
 		setCurrentClient(response.data);
 	};
 
-	// Determines which tab is active
-	const [tabID, setTabID] = React.useState(0);
-
-	const handleTabChange = (event, newValue) => { // 'newValue' is the index of the tab, provided by Tabs component
-		setTabID(newValue);
-	}
-
+	// Main Tab Elements
 	const viewTabsMain = [
 		{ text: 'About', tab: <AppletActiveClientAbout/>},
-		{ text: 'Personas', tab: <AppletActiveClientPersonas/>},
+		{ text: 'Docs', tab: <AppletActiveClientDocs/>},
 		{ text: 'Topics', tab: <AppletActiveClientTopics /> },
 	];
 	
+	// Secondary Tab Elements
 	const viewTabsSecondary = [
 		{ text: 'Settings', tab: <AppletActiveClientSettings/>},
 	];
@@ -57,20 +51,23 @@ export default function AppletViewActiveClient() {
 				<h1 sx={{ display: 'block' }}>{currentClient.name}</h1>
 				
 				{/* Tabs Element */}
-				<Tabs value={tabID} onChange={handleTabChange}>
+				<Tabs value={openTab} >
 					
 					{/* Main Tab Elements */}
 					{viewTabsMain.map((item, index) => (
-						<Tab key={index} label={item.text} onClick={() => setOpenTab(item.text)}/>
+						<Tab key={index} label={item.text} value={item.text} onClick={() => setOpenTab(item.text)}/>
 					))}
 
-					{/* Spacer Element */}
-					<Tab className='tab-spacer' sx={{flexGrow: 1}} disabled ></Tab>
+
+					{/* Space Between Elements */}
+					<Tab className='tab-spacer' sx={{mr: 'auto'}} disabled ></Tab>
+					
 					
 					{/* Secondary Tab Elements */}
 					{viewTabsSecondary.map((item, index) => (
-						<Tab key={index} label={item.text} onClick={() => setOpenTab(item.text)}/>
+						<Tab key={index} label={item.text} value={item.text} onClick={() => setOpenTab(item.text)}/>
 					))}
+
 					
 				</Tabs>
 

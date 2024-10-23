@@ -2,13 +2,21 @@ import React, { useState, useEffect, useContext } from 'react';
 
 import axios from 'axios';
 
+import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+
+import IconButton from '@mui/material/IconButton';
+import Collapse from '@mui/material/Collapse';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+
 
 import { SharedStateContext } from './_SharedStateComponent';
 
@@ -26,6 +34,17 @@ export default function AppletActiveClientAbout() {
 
 	const [competitorImages, setCompetitorImages] = useState({});
 
+	const [expanded, setExpanded] = useState('none'); // State for collapsible pros and cons
+
+	// Handle competitor expanded state
+	const handleExpandClick = (competitorUrl) => {
+		if (expanded === competitorUrl) {
+			setExpanded('none');
+		} else {
+			setExpanded(competitorUrl);
+		}
+	  };
+	
 	// Fetch meta data for each competitor
 	const fetchWebsiteMeta = async (targetUrl) => {
 		try {
@@ -90,57 +109,109 @@ export default function AppletActiveClientAbout() {
 
 			</Stack>
 
-
 			<h3>{currentClient.description}</h3>
 			<p>{currentClient.descriptionaddon}</p>
 
 			<Divider />
 
 
+			{/* Target Personas */}
+			<h2>Target Personas</h2>
+			
+			<Stack className="client-container persona" direction="row" spacing={2}>
+				
+				{currentClient.personas &&
+					JSON.parse(currentClient.personas).map((persona, index) => (		
+						
+						<Card className="client-card persona" key={index} variant="outlined">
+							<CardContent key={index} sx={{ flexGrow: 1 }}>
+								<h1>{persona.name}</h1>
+								<p>{persona.personaSummary}</p>
+								<p>{persona.industrySummary}</p>
+								<p>{persona.services}</p>
+							</CardContent>
+						</Card>
+
+					))
+				}
+
+			</Stack>
+			
+			<Divider />
 
 			{/* Products & Services */}
 			<h2>Products & Services</h2>
-
-			{currentClient.products
-				?
+				
+			{currentClient.products &&
 				JSON.parse(currentClient.products).map((product, index) => (
-					<>
-						<Paper className={`persona ${isDarkMode && 'dark'}`} elevation={3}>
-							<Stack key={index}>
-								<h3 key={"name" + index}>{product.name}</h3>
-								<p key={"description" + index}>{product.description}</p>
-							</Stack>
+					
+					<Paper className={`client-paper product ${isDarkMode && 'dark'}`} elevation={3}>
+						<Stack key={index}>
+							<h1 key={"name" + index}>{product.name}</h1>
+							<p key={"description" + index}>{product.description}</p>
+						</Stack>
 
-							<h4>Competitors:</h4>
-							<Stack className="competitor-container" direction="row" spacing={2}>
+						<h4>Competitors:</h4>
+						<Box className="client-container product" sx={{ height: '500px', overflowY: 'auto' }}>
+							
+							{product.competitors &&
+								product.competitors.map((competitor) => (
 
-								{product.competitors.map((competitor, index) => (
-
-									<Card className="competitor-card" key={index} variant="outlined">
+									<Card className="client-card product" key={index} variant="outlined" sx={{ display: 'flex', flexDirection: 'row', marginBottom: '15px' }}>
+									
 										
-										<CardMedia height="200" image={competitorImages[competitor.url]} component="img" />
 										
-										<CardContent key={index}>
-											<h3>{competitor.name}</h3>
-											<a href={competitor.url}><h5>{competitor.url}</h5></a>
-											<hr />
-											<h4>{competitor.description} </h4>
-											<ul>
-												<li><h5><strong>Pros -</strong> {competitor.pros}</h5></li>
-												<li><h5><strong>Cons -</strong> {competitor.cons}</h5></li>
-											</ul>
-										</CardContent>
+										{/* Competitor Info */}
+										<Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+											
+											<Stack direction="row" spascing={2} justifyContent="space-between" alignItems="center">
+												{/* Competitor Image */}
+												<CardMedia component="img" sx={{ height: '200px', width: '350px', objectFit: 'cover', flexShrink: 0 }} image={competitorImages[competitor.url] || 'fallback-image.png'} onError={(e) => { e.target.onerror = null; e.target.src = 'fallback-image.png'; }} />
+											
+												<Stack sx={{ height: '200px' }}>
+
+													<CardContent sx={{ pt: 0 }}>
+														<Stack direction="row" spascing={2} justifyContent="space-between" alignItems="center">
+															<h2 sx={{ mr: 'auto' }}>{competitor.name}</h2>
+															<Button className='competitor-url' href={competitor.url} size="small" sx={{ ml: 'auto' }} variant="contained" target="_blank" rel="noopener noreferrer">
+																Visit Website
+															</Button>
+														</Stack>
+														<hr />
+														<h4>{competitor.description}</h4>
+													</CardContent>
+
+													<CardActions sx={{ mt: 'auto'}}>
+														<Button startIcon={expanded === competitor.url ? <ExpandLessIcon /> : <ExpandMoreIcon />} size="small" fontSize="small" onClick={() => handleExpandClick(competitor.url)} aria-expanded={expanded === competitor.url} aria-label="show more">
+															{expanded === competitor.url ? 'Less' : 'More'}
+														</Button>
+													</CardActions>
+
+												</Stack>
+
+											</Stack>
+											
+											{/* Collapsible Pros and Cons */}
+											<Collapse in={expanded === competitor.url} timeout="auto" unmountOnExit>
+												<CardContent>
+													<ul>
+														<li><strong>Pros:</strong> {competitor.pros}</li>
+														<li><strong>Cons:</strong> {competitor.cons}</li>
+													</ul>
+												</CardContent>
+											</Collapse>
+
+										</Box>
+										
 									</Card>
 
-								))}
+								))
+							}
 
-							</Stack>
-						</Paper>
-					</>
+						</Box>
 
+					</Paper>
 				))
-				:
-				<p>No Products & Services Found</p>
 			}
 
 		</Stack>

@@ -332,34 +332,30 @@ body {
 	overflow: scroll;
 }
 
-	.view-body .persona {
+	.view-body .client-paper {
 		margin: 0 0 16px 0;
 		padding: 16px 16px 32px 16px;
 		background-color: var(--sidebar-background-color-light);
 	}
 
-		.view-body .persona.dark {
+		.view-body .client-paper.dark {
 			background-color: var(--sidebar-background-color-dark);
 			color: var(--color-light);
 		}
 
-	.view-body .persona .competitor-container {
-		overflow-x: scroll;
+	.view-body .client-paper .client-container {
+		/* overflow-y: scroll; */
 		padding: 8px 16px;
 		margin: 0 -8px;
 		box-shadow: inset 0 0 10px var(--color-dark);
 		border-radius: 10px;
 	}
 	
-	.view-body .persona .competitor-card {
-		min-width: 400px;
+	.view-body .client-paper .client-card {
+		min-width: 30%;
 		border-radius: 5px;
 	}
 
-		.view-body .persona .competitor-card * {
+		.view-body .client-paper .client-card * {
 			text-align: justify;
 		}
-
-	.view-body .persona .competitor-row {
-		justify-content: left;
-	}
