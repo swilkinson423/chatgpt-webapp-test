@@ -21,7 +21,7 @@ export default function AppletActiveClientSettings() {
 	// Update a client
 	const updateClient = async () => {
 		try {
-			await axios.put(`http://localhost:3000/clients/${currentClient.id}`, currentClient)
+			await axios.put(`http://localhost:3000/companies/${currentClient.id}`, currentClient)
 			setClients(clients.map((client) => (client.id === currentClient.id ? currentClient : client)));
 			setActiveClientID(currentClient.id);
 			setAppletViewState("active-clients");
@@ -35,7 +35,7 @@ export default function AppletActiveClientSettings() {
 	// Delete a client
 	const deleteClient = async (id) => {
 		try {
-			await axios.delete(`http://localhost:3000/clients/${id}`);
+			await axios.delete(`http://localhost:3000/companies/${id}`);
 			setClients(clients.filter((client) => client.id !== id));
 			setActiveClientID("all-clients");
 			setAppletViewState("all-clients");
@@ -112,93 +112,6 @@ export default function AppletActiveClientSettings() {
 							placeholder="Client Website"
 							className="form-control mb-3"
 							value={currentClient.website}
-							onChange={handleEditChange}
-						/>
-
-						{/* Client LinkedIn */}
-						<h6>LinkedIn:</h6>
-						<input
-							type="text"
-							name="linkedin"
-							placeholder="Client LinkedIn"
-							className="form-control mb-3"
-							value={currentClient.linkedin}
-							onChange={handleEditChange}
-						/>
-
-						{/* Client YouTube */}
-						<h6>YouTube:</h6>
-						<input
-							type="text"
-							name="youtube"
-							placeholder="Client YouTube"
-							className="form-control mb-3"
-							value={currentClient.youtube}
-							onChange={handleEditChange}
-						/>
-
-						{/* Client Twitter */}
-						<h6>X &#40;Twitter&#41;:</h6>
-						<input
-							type="text"
-							name="twitter"
-							placeholder="Client X (Twitter)"
-							className="form-control mb-3"
-							value={currentClient.twitter}
-							onChange={handleEditChange}
-						/>
-
-						{/* Client Facebook */}
-						<h6>Facebook:</h6>
-						<input
-							type="text"
-							name="facebook"
-							placeholder="Client Facebook"
-							className="form-control mb-3"
-							value={currentClient.facebook}
-							onChange={handleEditChange}
-						/>
-
-						{/* Client Instagram */}
-						<h6>Instagram:</h6>
-						<input
-							type="text"
-							name="instagram"
-							placeholder="Client Instagram"
-							className="form-control mb-3"
-							value={currentClient.instagram}
-							onChange={handleEditChange}
-						/>
-
-						{/* Client TikTok */}
-						<h6>TikTok:</h6>
-						<input
-							type="text"
-							name="tiktok"
-							placeholder="Client TikTok"
-							className="form-control mb-3"
-							value={currentClient.tiktok}
-							onChange={handleEditChange}
-						/>
-
-						{/* Client Products & Services */}
-						<h6>Products & Services:</h6>
-						<input
-							type="text"
-							name="products"
-							placeholder="Client Products & Services"
-							className="form-control mb-3"
-							value={currentClient.products}
-							onChange={handleEditChange}
-						/>
-
-						{/* Client Target Personas */}
-						<h6>Target Personas:</h6>
-						<textarea
-							name="personas"
-							placeholder="Client Target Persona"
-							className="form-control mb-3"
-							value={currentClient.personas}
 							onChange={handleEditChange}
 						/>
 

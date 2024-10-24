@@ -9,6 +9,9 @@ package-lock.json
 frontend/package-lock.json
 backend/package-lock.json
 
+# Credentials & API keys
+pool.js
+
 /.pnp
 .pnp.js
 

@@ -13,16 +13,7 @@ export default function AppletAddNewClient() {
 	const newClientTemplate = {
 		name: '', 
 		website: '', 
-		description: '', 
-		descriptionaddon: '',
-		products: '', 
-		personas: '', 
-		linkedin: '', 
-		youtube: '',
-		twitter: '', 
-		facebook: '', 
-		instagram: '', 
-		tiktok: ''
+		is_client: true
 	}
 
 	const [newClient, setNewClient] = useState(newClientTemplate);
@@ -36,7 +27,7 @@ export default function AppletAddNewClient() {
 	// Create a new client
 	const addClient = async () => {
 		try {
-			const postNew = await axios.post(`http://localhost:3000/clients/`, newClient);
+			const postNew = await axios.post(`http://localhost:3000/companies/`, newClient);
 			const response = await axios.get(`http://localhost:3000/clients/`);
 				setActiveClientID(postNew.data.id);
 				setOpenSubMenu('active-clients');

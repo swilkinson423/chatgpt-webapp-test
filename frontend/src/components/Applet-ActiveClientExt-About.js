@@ -44,25 +44,30 @@ export default function AppletActiveClientAbout() {
 			setExpanded(competitorUrl);
 		}
 	  };
-	
-	// Fetch meta data for each competitor
-	const fetchWebsiteMeta = async (targetUrl) => {
+
+
+	// Fetch meta data and screenshot for each competitor
+	const fetchCompetitorScreenshot = async (targetUrl) => {
 		try {
-			const response = await axios
-				.get('http://localhost:3000/fetch-meta', { params: { url: targetUrl }})
-				.catch((error) => console.error("Error fetching metadata: ", error));;
-			return response.data;
+			// Make the request to get the screenshot as base64
+			const response = await axios.get(`http://localhost:3000/capture-screenshot`, {
+				params: { url: targetUrl }
+			});
+			return { image: response.data.image }; // image is base64 encoded
 		} catch (error) {
-			return {};
+			console.error("Error fetching screenshot metadata: ", error);
+			return { image: './fallback-image.png' }; // Use fallback image if screenshot fails
 		}
 	};
 
+	// Fetch competitor images on component mount
 	useEffect(() => {
 		if (currentClient.products) {
 			const products = JSON.parse(currentClient.products);
 			products.forEach((product) => {
 				product.competitors.forEach(async (competitor) => {
-					const metaData = await fetchWebsiteMeta(competitor.url);
+					const metaData = await fetchCompetitorScreenshot(competitor.url);
+					console.log(metaData.image); // Log the base64 string to verify
 					setCompetitorImages((prevImages) => ({
 						...prevImages,
 						[competitor.url]: metaData.image
@@ -166,7 +171,7 @@ export default function AppletActiveClientAbout() {
 											
 											<Stack direction="row" spascing={2} justifyContent="space-between" alignItems="center">
 												{/* Competitor Image */}
-												<CardMedia component="img" sx={{ height: '200px', width: '350px', objectFit: 'cover', flexShrink: 0 }} image={competitorImages[competitor.url] || 'fallback-image.png'} onError={(e) => { e.target.onerror = null; e.target.src = 'fallback-image.png'; }} />
+												<CardMedia component="img" sx={{ height: '270px', width: '480px', objectFit: 'fill', borderRadius: '5px', p: '5px', boxShadow: 'inset 0 0 15px #000', flexShrink: 0 }} image={competitorImages[competitor.url] || 'fallback-image.png'} onError={(e) => { e.target.onerror = null; e.target.src = 'fallback-image.png'; }} />
 											
 												<Stack sx={{ height: '200px' }}>
 
