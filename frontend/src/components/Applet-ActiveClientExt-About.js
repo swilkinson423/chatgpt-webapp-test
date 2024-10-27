@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
-
-import axios from 'axios';
+import React, { useState, useContext } from 'react';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -17,7 +15,6 @@ import Collapse from '@mui/material/Collapse';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
-
 import { SharedStateContext } from './_SharedStateComponent';
 
 import { ReactComponent as LogoLaptop } from "./../assets/links-laptop.svg"
@@ -31,87 +28,51 @@ import { ReactComponent as LogoTikTok } from "./../assets/links-tiktok.svg"
 export default function AppletActiveClientAbout() {
 
 	const { isDarkMode, currentClient } = useContext(SharedStateContext);
+	const [expanded, setExpanded] = useState('none');
 
-	const [competitorImages, setCompetitorImages] = useState({});
-
-	const [expanded, setExpanded] = useState('none'); // State for collapsible pros and cons
-
-	// Handle competitor expanded state
+	// Toggle expanded state for collapsible content
 	const handleExpandClick = (competitorUrl) => {
-		if (expanded === competitorUrl) {
-			setExpanded('none');
-		} else {
-			setExpanded(competitorUrl);
-		}
-	  };
-
-
-	// Fetch meta data and screenshot for each competitor
-	const fetchCompetitorScreenshot = async (targetUrl) => {
-		try {
-			// Make the request to get the screenshot as base64
-			const response = await axios.get(`http://localhost:3000/capture-screenshot`, {
-				params: { url: targetUrl }
-			});
-			return { image: response.data.image }; // image is base64 encoded
-		} catch (error) {
-			console.error("Error fetching screenshot metadata: ", error);
-			return { image: './fallback-image.png' }; // Use fallback image if screenshot fails
-		}
+		setExpanded(expanded === competitorUrl ? 'none' : competitorUrl);
 	};
-
-	// Fetch competitor images on component mount
-	useEffect(() => {
-		if (currentClient.products) {
-			const products = JSON.parse(currentClient.products);
-			products.forEach((product) => {
-				product.competitors.forEach(async (competitor) => {
-					const metaData = await fetchCompetitorScreenshot(competitor.url);
-					console.log(metaData.image); // Log the base64 string to verify
-					setCompetitorImages((prevImages) => ({
-						...prevImages,
-						[competitor.url]: metaData.image
-					}));
-				});
-			});
-		}
-	}, [currentClient.products]);
-
-
-	// Social Links
+	
+	// Social Links with dynamic assignment
 	const socials = [
 		{ name: "Website", url: currentClient.website, icon: <LogoLaptop /> },
-		{ name: "LinkedIn", url: currentClient.linkedin, icon: <LogoLinkedIn /> },
-		{ name: "YouTube", url: currentClient.youtube, icon: <LogoYouTube /> },
-		{ name: "Twitter", url: currentClient.twitter, icon: <LogoTwitter /> },
-		{ name: "Facebook", url: currentClient.facebook, icon: <LogoFacebook /> },
-		{ name: "Instagram", url: currentClient.instagram, icon: <LogoInstagram /> },
-		{ name: "TikTok", url: currentClient.tiktok, icon: <LogoTikTok /> },
-		{ name: "Pinterest", url: currentClient.pinterest, icon: <LogoTikTok /> }
-	]
+		{ name: "LinkedIn", url: currentClient.socials?.linkedin, icon: <LogoLinkedIn /> },
+		{ name: "YouTube", url: currentClient.socials?.youtube, icon: <LogoYouTube /> },
+		{ name: "Twitter", url: currentClient.socials?.twitter, icon: <LogoTwitter /> },
+		{ name: "Facebook", url: currentClient.socials?.facebook, icon: <LogoFacebook /> },
+		{ name: "Instagram", url: currentClient.socials?.instagram, icon: <LogoInstagram /> },
+		{ name: "TikTok", url: currentClient.socials?.tiktok, icon: <LogoTikTok /> },
+		{ name: "Pinterest", url: currentClient.socials?.pinterest, icon: <LogoTikTok /> }
+	];
 
 	return (
 		<Stack>
-
 			{/* Overview Header */}
 			<Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between' }}>
-
-				{/* Header Title */}
 				<h1>Company Overview</h1>
 
 				{/* Website & Social Links */}
 				<Stack direction="row">
-					{socials.map((social, index) => (
-						<>
-							{social.url &&
-								<Button className='client-socials' startIcon={social.icon} size="small" fontSize="small" href={social.url} variant="contained" target="_blank" rel="noopener noreferrer">
-									{social.name}
-								</Button>
-							}
-						</>
+					{socials.map((social) => (
+						social.url && (
+							<Button
+								className='client-socials'
+								key={social.name}
+								startIcon={social.icon}
+								size="small"
+								fontSize="small"
+								href={social.url}
+								variant="contained"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								{social.name}
+							</Button>
+						)
 					))}
 				</Stack>
-
 			</Stack>
 
 			<h3>{currentClient.description}</h3>
@@ -119,107 +80,120 @@ export default function AppletActiveClientAbout() {
 
 			<Divider />
 
-
 			{/* Target Personas */}
 			<h2>Target Personas</h2>
-			
 			<Stack className="client-container persona" direction="row" spacing={2}>
-				
-				{currentClient.personas &&
-					JSON.parse(currentClient.personas).map((persona, index) => (		
-						
-						<Card className="client-card persona" key={index} variant="outlined">
-							<CardContent key={index} sx={{ flexGrow: 1 }}>
-								<h1>{persona.name}</h1>
-								<p>{persona.personaSummary}</p>
-								<p>{persona.industrySummary}</p>
-								<p>{persona.services}</p>
-							</CardContent>
-						</Card>
-
-					))
-				}
-
+				{currentClient.personas?.map((persona) => (			
+					<Card className="client-card persona" key={persona.persona_id} variant="outlined">
+						<CardContent>
+							<h1>{persona.name}</h1>
+							<p>{persona.personaSummary || "No summary available"}</p>
+							<p>{persona.industrySummary || "No industry information"}</p>
+							<p>{persona.services || "No services listed"}</p>
+						</CardContent>
+					</Card>
+				))}
 			</Stack>
 			
 			<Divider />
 
 			{/* Products & Services */}
 			<h2>Products & Services</h2>
-				
-			{currentClient.products &&
-				JSON.parse(currentClient.products).map((product, index) => (
-					
-					<Paper className={`client-paper product ${isDarkMode && 'dark'}`} elevation={3}>
-						<Stack key={index}>
-							<h1 key={"name" + index}>{product.name}</h1>
-							<p key={"description" + index}>{product.description}</p>
-						</Stack>
+			{currentClient.products?.map((product) => (
+				<Paper
+					className={`client-paper product ${isDarkMode && 'dark'}`}
+					key={product.product_id}
+					elevation={3}
+				>
+					<Stack>
+						<h1>{product.name}</h1>
+						<p>{product.description}</p>
+					</Stack>
 
-						<h4>Competitors:</h4>
-						<Box className="client-container product" sx={{ height: '500px', overflowY: 'auto' }}>
-							
-							{product.competitors &&
-								product.competitors.map((competitor) => (
+					<h4>Competitors:</h4>
+					<Box className="client-container product" sx={{ height: '500px', overflowY: 'auto' }}>
+						{currentClient.competitors
+							.filter(competitor => competitor.product_id === product.product_id)
+							.map(({ competitor_info, product_id }) => {
+								const { id, name, url, description, screenshot, pros, cons } = competitor_info;
 
-									<Card className="client-card product" key={index} variant="outlined" sx={{ display: 'flex', flexDirection: 'row', marginBottom: '15px' }}>
-									
-										
-										
+								return (
+									<Card
+										className="client-card product"
+										key={id}
+										variant="outlined"
+										sx={{ display: 'flex', flexDirection: 'row', marginBottom: '15px' }}
+									>
 										{/* Competitor Info */}
 										<Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-											
-											<Stack direction="row" spascing={2} justifyContent="space-between" alignItems="center">
-												{/* Competitor Image */}
-												<CardMedia component="img" sx={{ height: '270px', width: '480px', objectFit: 'fill', borderRadius: '5px', p: '5px', boxShadow: 'inset 0 0 15px #000', flexShrink: 0 }} image={competitorImages[competitor.url] || 'fallback-image.png'} onError={(e) => { e.target.onerror = null; e.target.src = 'fallback-image.png'; }} />
-											
-												<Stack sx={{ height: '200px' }}>
+											<Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
+												<CardMedia
+													component="img"
+													sx={{
+														height: '270px',
+														width: '480px',
+														objectFit: 'fill',
+														borderRadius: '5px',
+														p: '5px',
+														boxShadow: 'inset 0 0 15px #000',
+														flexShrink: 0
+													}}
+													image={screenshot || 'fallback-image.png'}
+													onError={(e) => { e.target.onerror = null; e.target.src = 'fallback-image.png'; }}
+												/>
 
+												<Stack sx={{ height: '200px' }}>
 													<CardContent sx={{ pt: 0 }}>
-														<Stack direction="row" spascing={2} justifyContent="space-between" alignItems="center">
-															<h2 sx={{ mr: 'auto' }}>{competitor.name}</h2>
-															<Button className='competitor-url' href={competitor.url} size="small" sx={{ ml: 'auto' }} variant="contained" target="_blank" rel="noopener noreferrer">
+														<Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
+															<h2 sx={{ mr: 'auto' }}>{name}</h2>
+															<Button
+																className='competitor-url'
+																href={url}
+																size="small"
+																sx={{ ml: 'auto' }}
+																variant="contained"
+																target="_blank"
+																rel="noopener noreferrer"
+															>
 																Visit Website
 															</Button>
 														</Stack>
 														<hr />
-														<h4>{competitor.description}</h4>
+														<h4>{description}</h4>
 													</CardContent>
 
-													<CardActions sx={{ mt: 'auto'}}>
-														<Button startIcon={expanded === competitor.url ? <ExpandLessIcon /> : <ExpandMoreIcon />} size="small" fontSize="small" onClick={() => handleExpandClick(competitor.url)} aria-expanded={expanded === competitor.url} aria-label="show more">
-															{expanded === competitor.url ? 'Less' : 'More'}
+													{/* Expandable Pros & Cons */}
+													<CardActions sx={{ mt: 'auto' }}>
+														<Button
+															startIcon={expanded === url ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+															size="small"
+															fontSize="small"
+															onClick={() => handleExpandClick(url)}
+															aria-expanded={expanded === url}
+															aria-label="show more"
+														>
+															{expanded === url ? 'Less' : 'More'}
 														</Button>
 													</CardActions>
-
 												</Stack>
-
 											</Stack>
-											
-											{/* Collapsible Pros and Cons */}
-											<Collapse in={expanded === competitor.url} timeout="auto" unmountOnExit>
+
+											<Collapse in={expanded === url} timeout="auto" unmountOnExit>
 												<CardContent>
 													<ul>
-														<li><strong>Pros:</strong> {competitor.pros}</li>
-														<li><strong>Cons:</strong> {competitor.cons}</li>
+														<li><strong>Pros:</strong> {pros || "No pros listed"}</li>
+														<li><strong>Cons:</strong> {cons || "No cons listed"}</li>
 													</ul>
 												</CardContent>
 											</Collapse>
-
 										</Box>
-										
 									</Card>
-
-								))
-							}
-
-						</Box>
-
-					</Paper>
-				))
-			}
-
+								);
+							})
+						}
+					</Box>
+				</Paper>
+			))}
 		</Stack>
-
 	);
 }

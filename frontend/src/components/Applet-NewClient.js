@@ -3,20 +3,20 @@ import axios from 'axios';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
 import { SharedStateContext } from './_SharedStateComponent';
 
 export default function AppletAddNewClient() {
-
 	const { setClients, setOpenSubMenu, setActiveSidebarSubitem, setAppletViewState, setActiveClientID } = useContext(SharedStateContext);
 
-	const newClientTemplate = {
-		name: '', 
-		website: '', 
-		is_client: true
-	}
-
-	const [newClient, setNewClient] = useState(newClientTemplate);
+	const [newClient, setNewClient] = useState({
+		name: '',
+		website: '',
+		is_client: true,
+	});
 
 	// Handle form input for new clients
 	const handleInputChange = (e) => {
@@ -28,13 +28,17 @@ export default function AppletAddNewClient() {
 	const addClient = async () => {
 		try {
 			const postNew = await axios.post(`http://localhost:3000/companies/`, newClient);
+			setActiveClientID(postNew.data.data.id); // Assuming response is `{ success: true, data: { id: ... } }`
+
+			// Update UI state and fetch clients
 			const response = await axios.get(`http://localhost:3000/clients/`);
-				setActiveClientID(postNew.data.id);
-				setOpenSubMenu('active-clients');
-				setActiveSidebarSubitem('active-clients-'+postNew.data.id);
-				setAppletViewState('active-clients');
-				setClients(response.data);
-				setNewClient(newClientTemplate);
+			setClients(response.data.data);
+			
+			// Reset form and navigate to new client view
+			setNewClient({ name: '', website: '', is_client: true });
+			setOpenSubMenu('active-clients');
+			setActiveSidebarSubitem(`active-clients-${postNew.data.data.id}`);
+			setAppletViewState('active-clients');
 		} catch (err) {
 			console.error('Error adding client:', err);
 			alert('Failed to add client. Please try again.');
@@ -42,50 +46,52 @@ export default function AppletAddNewClient() {
 	};
 
 	return (
-
 		<Box id='applet'>
-			
 			{/* Title Element */}
 			<Stack className='view-header'>
-				<h1>Add New Client</h1>
+				<Typography variant="h1">Add New Client</Typography>
 			</Stack>
-
 
 			{/* Body Element */}
 			<Box className='view-body'>
-
 				{/* New Client Form Header */}
-				<div>
-					<h2>Company Info:</h2>
-				</div>	
+				<Typography variant="h2" gutterBottom>Company Info:</Typography>
 
 				{/* Client Name */}
-				<h6>Name:</h6>
-				<input
-					type="text"
+				<TextField
+					label="Client Name"
 					name="name"
-					placeholder="Client Name"
-					className="form-control mb-3"
+					variant="outlined"
+					fullWidth
+					margin="normal"
 					value={newClient.name}
 					onChange={handleInputChange}
+					placeholder="Enter client name"
 				/>
 
 				{/* Client Website */}
-				<h6>Company Website:</h6>
-				<input
-					type="text"
+				<TextField
+					label="Company Website"
 					name="website"
-					placeholder="Client Website"
-					className="form-control mb-3"
+					variant="outlined"
+					fullWidth
+					margin="normal"
 					value={newClient.website}
 					onChange={handleInputChange}
+					placeholder="Enter client website"
 				/>
 
 				{/* Submit Button */}
-				<button onClick={addClient}>Add Client</button>
-
+				<Button
+					variant="contained"
+					color="primary"
+					onClick={addClient}
+					disabled={!newClient.name || !newClient.website}
+					sx={{ mt: 2 }}
+				>
+					Add Client
+				</Button>
 			</Box>
-
 		</Box>
 	);
 };

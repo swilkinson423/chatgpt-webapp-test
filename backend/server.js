@@ -6,28 +6,21 @@ const app = express();
 const port = 3000;
 
 // Middleware to parse JSON
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
+// Start server and handle potential startup errors
 app.listen(port, (err) => {
 	if (err) {
 		console.error('Error starting the server:', err);
-		process.exit(1); // Exit the process with failure code
+		process.exit(1);
 	}
 	console.log(`App running on http://localhost:${port}`);
 });
 
 
 // ----------------------------------------------
-// --- CONNECT FRONT<>BACK ON DIFFERENT PORTS ---
+// -------- NODE <> POSTGRES CONNECTION --------
 // ----------------------------------------------
-const cors = require('cors');
-app.use(cors());
-
-
-// ----------------------------------------------
-// -------- NODE <> POSTGRESS CONNECTION --------
-// ----------------------------------------------
-// Example query to test the connection
 const { pool } = require('./pool');
 pool.query('SELECT NOW()', (err, res) => {
 	if (err) {
@@ -37,49 +30,33 @@ pool.query('SELECT NOW()', (err, res) => {
 	}
 });
 
-
-// ----------------------------------------------
-// -------- SERVER-SIDE URL SCRAPING ------------ {TO DELETE???}
-// ----------------------------------------------
-const axios = require('axios');
-const { load } = require('cheerio');
-const { JSDOM } = require('jsdom');
-
-app.get('/fetch-meta', async (req, res) => {
-	const url = req.query.url;
-
-	try {
-		const { data } = await axios.get(url);
-		const $ = load(data);
-
-		const metaTitle = $('meta[property="og:title"]').attr('content') || $('title').text();
-		const metaDescription = $('meta[property="og:description"]').attr('content') || $('meta[name="description"]').attr('content');
-		let metaImage = $('meta[property="og:image"]').attr('content') || $('img').first().attr('src');
-
-		res.json({
-			title: metaTitle,
-			description: metaDescription,
-			image: metaImage,
-		});
-
-	} catch (err) {
-		res.status(500).json({ error: 'Failed to fetch metadata' });
-	}
+// Graceful shutdown for Postgres pool
+process.on('SIGINT', () => {
+	pool.end(() => {
+		console.log('Postgres pool has ended');
+		process.exit(0);
+	});
 });
+
+
+// ----------------------------------------------
+// --- CONNECT FRONT<>BACK ON DIFFERENT PORTS ---
+// ----------------------------------------------
+const cors = require('cors');
+app.use(cors({
+	origin: pool.options.frontend,
+}));
 
 
 // ----------------------------------------------
 // -------- SERVER-SIDE SCREENSHOT CAPTURING ----
 // ----------------------------------------------
-// Import necessary modules
 const puppeteer = require('puppeteer');
 const { PuppeteerBlocker } = require('@cliqz/adblocker-puppeteer');
 const fetch = require('cross-fetch');
-
 const autoconsent = require('@duckduckgo/autoconsent/dist/autoconsent.puppet.js');
 const extraRules = require('@duckduckgo/autoconsent/rules/rules.json');
 
-// Combine rules from duckduckgo autoconsent and consentomatic
 const consentomatic = extraRules.consentomatic;
 const rules = [
 	...autoconsent.rules,
@@ -87,53 +64,43 @@ const rules = [
 	...extraRules.autoconsent.map(spec => autoconsent.createAutoCMP(spec)),
 ];
 
-// Function to capture screenshot as buffer
+// Function to capture screenshot
 const captureScreenshot = async (url) => {
-		
 	const blocker = await PuppeteerBlocker.fromLists(fetch, [
 		'https://secure.fanboy.co.nz/fanboy-cookiemonster.txt'
 	]);
-
 	const browser = await puppeteer.launch({ headless: true });
 	try {
-        const page = await browser.newPage();
-        
-        await blocker.enableBlockingInPage(page); // Enable ad/cookie blocker on the page
-        await page.setViewport({ width: 1920, height: 1080 }); // Set viewport size for the screenshot
+		const page = await browser.newPage();
+		await blocker.enableBlockingInPage(page);
+		await page.setViewport({ width: 1920, height: 1080 });
 
-        // Attach autoconsent to the page to handle cookie consent
-        page.once('load', async () => {
-            const tab = autoconsent.attachToPage(page, url, rules, 10); // url and rules passed here
-            try {
-                await tab.checked;  // Check for consent popups
-                await tab.doOptIn(); // Automatically opt-in
-            } catch (e) {
-                console.warn(`CMP error`, e);
-            }
-        });
-
-		await page.goto(url, { waitUntil: ['load', 'domcontentloaded', 'networkidle0'] }); // Navigate to the target URL
-		const screenshot = await page.screenshot({ encoding: 'base64' }); // Take a screenshot and return it in base64 format
-        return screenshot;
-
+		// Attach autoconsent to handle cookie consent popups
+		page.once('load', async () => {
+			const tab = autoconsent.attachToPage(page, url, rules, 10);
+			try {
+				await tab.checked;
+				await tab.doOptIn();
+			} catch (e) {
+				console.warn('CMP error', e);
+			}
+		});
+		await page.goto(url, { waitUntil: ['load', 'domcontentloaded', 'networkidle0'] });
+		return await page.screenshot({ encoding: 'base64' });
 	} catch (e) {
-		console.error(`Error taking screenshot: ${e}`);
-        return null;
+		console.error('Error taking screenshot:', e);
+		return null;
 	} finally {
 		await browser.close();
 	}
-
-}
+};
 
 // Route to capture screenshot and send as base64
 app.get('/capture-screenshot', async (req, res) => {
-
 	const url = req.query.url;
 	const screenshotBuffer = await captureScreenshot(url);
-	
 	if (screenshotBuffer) {
-		// Convert buffer to base64 and send it
-		const base64Screenshot = `data:image/png;base64, ${screenshotBuffer.toString('base64')}`;
+		const base64Screenshot = `data:image/png;base64, ${screenshotBuffer}`;
 		res.json({ image: base64Screenshot });
 	} else {
 		res.status(500).json({ error: 'Failed to capture screenshot' });
@@ -146,16 +113,40 @@ app.get('/capture-screenshot', async (req, res) => {
 // ----------------------------------------------
 
 
+// Helper function for error handling
+const handleError = (res, error, message = 'Server error') => {
+	console.error(error.message);
+	res.status(500).json({ success: false, error: message });
+};
+
+
+// Helper function for adding relationships to join tables
+const addRelationship = async (table, id1, id2, value1, value2) => {
+	await pool.query(
+		`INSERT INTO ${table} (${id1}, ${id2}) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+		[value1, value2]
+	);
+};
+
+
+// Helper function for removing relationships from join tables
+const removeRelationship = async (table, id1, id2, value1, value2) => {
+	await pool.query(
+		`DELETE FROM ${table} WHERE ${id1} = $1 AND ${id2} = $2`,
+		[value1, value2]
+	);
+};
+
+
 // --+--+-- GET ENDPOINTS --+--+--
 
 // GET Endpoint - All Companies
 app.get('/companies', async (req, res) => {
 	try {
 		const result = await pool.query('SELECT * FROM companies');
-		res.status(200).json(result.rows);
+		res.status(200).json({ success: true, data: result.rows });
 	} catch (err) {
-		console.error(err.message);
-		res.status(500).json({ error: 'Server error' });
+		handleError(res, err, 'Failed to fetch companies');
 	}
 });
 
@@ -163,58 +154,158 @@ app.get('/companies', async (req, res) => {
 app.get('/clients', async (req, res) => {
 	try {
 		const result = await pool.query('SELECT * FROM companies WHERE is_client = true');
-		res.status(200).json(result.rows);
+		res.status(200).json({ success: true, data: result.rows });
 	} catch (err) {
-		console.error(err.message);
-		res.status(500).json({ error: 'Server error' });
+		handleError(res, err, 'Failed to fetch clients');
 	}
 });
 
-// GET Endpoint - Client Info
+// GET Endpoint - Client Overview
 app.get('/clients/:id', async (req, res) => {
 	const { id } = req.params;
 	try {
-		const result = await pool.query('SELECT * FROM companies FULL JOIN socials ON id = company_id FULL JOIN products ON id = product_id FULL JOIN personas ON id = persona_id WHERE id = $1', [id]);
-		if (result.rows.length === 0) {
-			// Return a 404 if the Company is not found
-			return res.status(404).json({ error: 'Company not found' });
-		}
-		res.status(200).json(result.rows[0]);
+		const result = await pool.query('SELECT * FROM companies WHERE id = $1', [id]);
+		if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Client not found' });
+		res.status(200).json({ success: true, data: result.rows[0] });
 	} catch (err) {
-		console.error(err.message);
-		res.status(500).json({ error: 'Server error' });
+		handleError(res, err, 'Failed to fetch client');
 	}
 });
 
-// GET Endpoint - Client Products
-app.get('/clients/:id/products', async (req, res) => {
+// GET Endpoint - Client Socials
+app.get('/clients/:id/socials', async (req, res) => {
 	const { id } = req.params;
 	try {
-		const result = await pool.query('SELECT * FROM products WHERE client_id = $1', [id]);
-		if (result.rows.length === 0) {
-			// Return a 404 if not found
-			return res.status(404).json({ error: 'Products & Services not found' });
-		}
-		res.status(200).json(result.rows);
+		const result = await pool.query('SELECT * FROM socials WHERE company_id = $1', [id]);
+		if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Socials not found' });
+		res.status(200).json({ success: true, data: result.rows[0] });
 	} catch (err) {
-		console.error(err.message);
-		res.status(500).json({ error: 'Server error' });
+		handleError(res, err, 'Failed to fetch client socials');
 	}
 });
 
-// GET Endpoint - Client Personas
+// GET Endpoint - All Client Personas
 app.get('/clients/:id/personas', async (req, res) => {
 	const { id } = req.params;
 	try {
-		const result = await pool.query('SELECT * FROM personas WHERE client_id = $1', [id]);
-		if (result.rows.length === 0) {
-			// Return a 404 if not found
-			return res.status(404).json({ error: 'Target Personas not found' });
-		}
-		res.status(200).json(result.rows);
+		const result = await pool.query('SELECT * FROM personas WHERE company_id = $1', [id]);
+		res.status(200).json({ success: true, data: result.rows });
 	} catch (err) {
-		console.error(err.message);
-		res.status(500).json({ error: 'Server error' });
+		handleError(res, err, 'Failed to fetch client personas');
+	}
+});
+
+// GET Endpoint - All Client Products
+app.get('/clients/:id/products', async (req, res) => {
+	const { id } = req.params;
+	try {
+		const result = await pool.query('SELECT * FROM products WHERE company_id = $1', [id]);
+		res.status(200).json({ success: true, data: result.rows });
+	} catch (err) {
+		handleError(res, err, 'Failed to fetch client products');
+	}
+});
+
+// GET Endpoint - All Competitors for a Product
+app.get('/products/:product_id/competitors', async (req, res) => {
+	const { product_id } = req.params;
+	try {
+		const result = await pool.query(`
+			SELECT c.*
+			FROM companies c
+			JOIN product_competitors pc ON c.id = pc.competitor_company_id
+			WHERE pc.product_id = $1
+		`, [product_id]);
+		res.status(200).json({ success: true, data: result.rows });
+	} catch (err) {
+		handleError(res, err, 'Failed to fetch product competitors');
+	}
+});
+
+// GET Endpoint - All Competitor Companies for a Company
+app.get('/companies/:company_id/competitors', async (req, res) => {
+	const { company_id } = req.params;
+	try {
+		const result = await pool.query(`
+			SELECT DISTINCT competitor.*
+			FROM products p
+			JOIN product_competitors pc ON p.product_id = pc.product_id
+			JOIN companies competitor ON pc.competitor_company_id = competitor.id
+			WHERE p.company_id = $1
+		`, [company_id]);
+		res.status(200).json({ success: true, data: result.rows });
+	} catch (err) {
+		handleError(res, err, 'Failed to fetch company competitors');
+	}
+});
+
+// GET Endpoint - All Products for a Persona
+app.get('/personas/:persona_id/products', async (req, res) => {
+	const { persona_id } = req.params;
+	try {
+		const result = await pool.query(`
+			SELECT p.*
+			FROM products p
+			JOIN persona_products pp ON p.product_id = pp.product_id
+			WHERE pp.persona_id = $1
+		`, [persona_id]);
+		res.status(200).json({ success: true, data: result.rows });
+	} catch (err) {
+		handleError(res, err, 'Failed to fetch persona products');
+	}
+});
+
+// GET Endpoint - Get All Documents
+app.get('/documents', async (req, res) => {
+	try {
+		const result = await pool.query('SELECT * FROM documents');
+		res.status(200).json({ success: true, data: result.rows });
+	} catch (err) {
+		handleError(res, err, 'Failed to fetch documents');
+	}
+});
+
+// GET Endpoint - Get a single document
+app.get('/documents/:document_id', async (req, res) => {
+	const { document_id } = req.params;
+	try {
+		const result = await pool.query('SELECT * FROM documents WHERE document_id = $1', [document_id]);
+		if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Document not found' });
+		res.status(200).json({ success: true, data: result.rows[0] });
+	} catch (err) {
+		handleError(res, err, 'Failed to fetch document');
+	}
+});
+
+// GET Endpoint - Get all documents for a specific company
+app.get('/companies/:company_id/documents', async (req, res) => {
+	const { company_id } = req.params;
+	try {
+		const result = await pool.query(`
+			SELECT d.*
+			FROM documents d
+			JOIN company_documents cd ON d.document_id = cd.document_id
+			WHERE cd.company_id = $1
+		`, [company_id]);
+		res.status(200).json({ success: true, data: result.rows });
+	} catch (err) {
+		handleError(res, err, 'Failed to fetch company documents');
+	}
+});
+
+// GET Endpoint - Get all companies associated with a specific document
+app.get('/documents/:document_id/companies', async (req, res) => {
+	const { document_id } = req.params;
+	try {
+		const result = await pool.query(`
+			SELECT c.*
+			FROM companies c
+			JOIN company_documents cd ON c.id = cd.company_id
+			WHERE cd.document_id = $1
+		`, [document_id]);
+		res.status(200).json({ success: true, data: result.rows });
+	} catch (err) {
+		handleError(res, err, 'Failed to fetch document companies');
 	}
 });
 
@@ -224,46 +315,115 @@ app.get('/clients/:id/personas', async (req, res) => {
 
 // POST Endpoint - Create a new Company
 app.post('/companies', async (req, res) => {
-	var { name, website, is_client } = req.body;
+	const { name, website, is_client } = req.body;
 	try {
 		const result = await pool.query(
 			'INSERT INTO companies (name, website, is_client) VALUES ($1, $2, $3) RETURNING id',
 			[name, website, is_client]
 		);
-		res.status(201).json(result.rows[0]);
+		const newCompanyId = result.rows[0].id;
+
+		// Automatically create a socials entry for the new company
+		await pool.query('INSERT INTO socials (company_id) VALUES ($1)', [newCompanyId]);
+
+		res.status(201).json({ success: true, data: result.rows[0] });
 	} catch (err) {
-		console.error(err.message);
-		res.status(500).json({ error: 'Server error' });
+		handleError(res, err, 'Failed to create company');
 	}
 });
 
-// POST Endpoint - Create a new Product
+// POST Endpoint - Create a new Product with Competitors
 app.post('/products', async (req, res) => {
-	var { name, description, client_id, competitors } = req.body;
+	const { name, description, company_id, competitors } = req.body;
 	try {
 		const result = await pool.query(
-			'INSERT INTO products (name, description, client_id, competitors) VALUES ($1, $2, $3, $4) RETURNING client_id',
-			[name, description, client_id, competitors]
+			'INSERT INTO products (name, description, company_id) VALUES ($1, $2, $3) RETURNING product_id',
+			[name, description, company_id]
 		);
-		res.status(201).json(result.rows[0]);
+		const productId = result.rows[0].product_id;
+
+		// Insert competitors into the join table
+		if (Array.isArray(competitors) && competitors.length > 0) {
+			const competitorValues = competitors.map((compId) => `(${productId}, ${compId})`).join(',');
+			await pool.query(`INSERT INTO product_competitors (product_id, competitor_company_id) VALUES ${competitorValues}`);
+		}
+
+		res.status(201).json({ success: true, data: result.rows[0] });
 	} catch (err) {
-		console.error(err.message);
-		res.status(500).json({ error: 'Server error' });
+		handleError(res, err, 'Failed to create product');
 	}
 });
 
-// POST Endpoint - Create a new persona
+// POST Endpoint - Add a Single Competitor to a Product
+app.post('/products/:product_id/competitors', async (req, res) => {
+	const { product_id } = req.params;
+	const { competitor_id } = req.body;
+	try {
+		await addRelationship('product_competitors', 'product_id', 'competitor_company_id', product_id, competitor_id);
+		res.status(201).json({ success: true, message: 'Competitor added to Product successfully' });
+	} catch (err) {
+		handleError(res, err, 'Failed to add competitor to product');
+	}
+});
+
+// POST Endpoint - Create a New Persona with Associated Products
 app.post('/personas', async (req, res) => {
-	var { name, description, client_id, products } = req.body;
+	const { name, description, company_id, products } = req.body;
 	try {
 		const result = await pool.query(
-			'INSERT INTO personas (name, description, client_id, products) VALUES ($1, $2, $3, $4) RETURNING client_id',
-			[name, description, client_id, products]
+			'INSERT INTO personas (name, description, company_id) VALUES ($1, $2, $3) RETURNING persona_id',
+			[name, description, company_id]
 		);
-		res.status(201).json(result.rows[0]);
+		const personaId = result.rows[0].persona_id;
+
+		// Insert products into the join table
+		if (Array.isArray(products) && products.length > 0) {
+			const productValues = products.map((prodId) => `(${personaId}, ${prodId})`).join(',');
+			await pool.query(`INSERT INTO persona_products (persona_id, product_id) VALUES ${productValues}`);
+		}
+
+		res.status(201).json({ success: true, data: result.rows[0] });
 	} catch (err) {
-		console.error(err.message);
-		res.status(500).json({ error: 'Server error' });
+		handleError(res, err, 'Failed to create persona');
+	}
+});
+
+// POST Endpoint - Add a Single Product to a Persona
+app.post('/personas/:persona_id/products', async (req, res) => {
+	const { persona_id } = req.params;
+	const { product_id } = req.body;
+	try {
+		await addRelationship('persona_products', 'persona_id', 'product_id', persona_id, product_id);
+		res.status(201).json({ success: true, message: 'Product added to Persona successfully' });
+	} catch (err) {
+		handleError(res, err, 'Failed to add product to persona');
+	}
+});
+
+// POST Endpoint - Create a New Document
+app.post('/documents', async (req, res) => {
+	const { name, category, filetype, url, thumbnail, rating, description } = req.body;
+	try {
+		const result = await pool.query(`
+			INSERT INTO documents (name, category, filetype, url, thumbnail, rating, description)
+			VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING document_id
+		`, [name, category, filetype, url, thumbnail, rating, description]);
+
+		res.status(201).json({ success: true, data: result.rows[0] });
+	} catch (err) {
+		handleError(res, err, 'Failed to create document');
+	}
+});
+
+// POST Endpoint - Add a Company to a Document
+app.post('/documents/:document_id/companies', async (req, res) => {
+	const { document_id } = req.params;
+	const { company_id } = req.body;
+	try {
+		await addRelationship('company_documents', 'document_id', 'company_id', document_id, company_id);
+		res.status(201).json({ success: true, message: 'Company added to document successfully' });
+	} catch (err) {
+		handleError(res, err, 'Failed to add company to document');
 	}
 });
 
@@ -271,69 +431,103 @@ app.post('/personas', async (req, res) => {
 
 // --+--+-- PUT ENDPOINTS --+--+--
 
+// Helper function to dynamically build update query
+const buildUpdateQuery = (table, idColumn, id, data) => {
+	const fields = [];
+	const values = [];
+	Object.entries(data).forEach(([key, value]) => {
+		if (value !== undefined) {
+			fields.push(`${key} = $${fields.length + 1}`);
+			values.push(value);
+		}
+	});
+	if (fields.length === 0) throw new Error('No fields to update');
+	values.push(id);
+	const query = `UPDATE ${table} SET ${fields.join(', ')} WHERE ${idColumn} = $${fields.length + 1}`;
+	return { query, values };
+};
+
 // PUT Endpoint - Update a Company
 app.put('/companies/:id', async (req, res) => {
 	const { id } = req.params;
-	const { name, website, is_client, description, descriptionaddon } = req.body;
+	const data = req.body;
+
 	try {
-		const result = await pool.query(
-			'UPDATE companies SET name = $2, website = $3, is_client = $4, description = $5, descriptionaddon = $6, WHERE id = $1',
-			[id, name, website, is_client, description, descriptionaddon]
-		);
-		res.status(200).json(result.rows[0]);
+		const { query, values } = buildUpdateQuery('companies', 'id', id, data);
+		const result = await pool.query(query, values);
+
+		if (result.rowCount === 0) return res.status(404).json({ success: false, message: 'Company not found' });
+		res.status(200).json({ success: true, message: 'Company updated successfully' });
 	} catch (err) {
-		console.error(err.message);
-		res.status(500).json({ error: 'Server error' });
+		handleError(res, err, 'Failed to update company');
 	}
 });
 
 // PUT Endpoint - Update Socials
 app.put('/companies/:id/socials', async (req, res) => {
 	const { id } = req.params;
-	const { linkedin, youtube, twitter, facebook, instagram, tiktok, pinterest } = req.body;
+	const data = req.body;
+
 	try {
-		const result = await pool.query(
-			'UPDATE socials SET linkedin = $2, youtube = $3, twitter = $4, facebook = $5, instagram = $6, tiktok = $7, pinterest = $8 WHERE company_id = $1',
-			[id, linkedin, youtube, twitter, facebook, instagram, tiktok, pinterest]
-		);
-		res.status(200).json(result.rows[0]);
+		const { query, values } = buildUpdateQuery('socials', 'company_id', id, data);
+		const result = await pool.query(query, values);
+
+		if (result.rowCount === 0) return res.status(404).json({ success: false, message: 'Socials not found' });
+		res.status(200).json({ success: true, message: 'Socials updated successfully' });
 	} catch (err) {
-		console.error(err.message);
-		res.status(500).json({ error: 'Server error' });
+		handleError(res, err, 'Failed to update socials');
 	}
 });
 
 // PUT Endpoint - Update a Product
 app.put('/products/:id', async (req, res) => {
 	const { id } = req.params;
-	const { name, description, client_id, competitors } = req.body;
+	const data = req.body;
+
 	try {
-		const result = await pool.query(
-			'UPDATE products SET name = $2, description = $3, client_id = $4, competitors = $5, WHERE product_id = $1',
-			[id, name, description, client_id, competitors ]
-		);
-		res.status(200).json(result.rows[0]);
+		const { query, values } = buildUpdateQuery('products', 'product_id', id, data);
+		const result = await pool.query(query, values);
+
+		if (result.rowCount === 0) return res.status(404).json({ success: false, message: 'Product not found' });
+		res.status(200).json({ success: true, message: 'Product updated successfully' });
 	} catch (err) {
-		console.error(err.message);
-		res.status(500).json({ error: 'Server error' });
+		handleError(res, err, 'Failed to update product');
 	}
 });
 
 // PUT Endpoint - Update a Persona
 app.put('/personas/:id', async (req, res) => {
 	const { id } = req.params;
-	const { name, description, client_id, competitors } = req.body;
+	const data = req.body;
+
 	try {
-		const result = await pool.query(
-			'UPDATE personas SET name = $2, description = $3, client_id = $4, products = $5, WHERE persona_id = $1',
-			[id, name, description, client_id, competitors ]
-		);
-		res.status(200).json(result.rows[0]);
+		const { query, values } = buildUpdateQuery('personas', 'persona_id', id, data);
+		const result = await pool.query(query, values);
+
+		if (result.rowCount === 0) return res.status(404).json({ success: false, message: 'Persona not found' });
+		res.status(200).json({ success: true, message: 'Persona updated successfully' });
 	} catch (err) {
-		console.error(err.message);
-		res.status(500).json({ error: 'Server error' });
+		handleError(res, err, 'Failed to update persona');
 	}
 });
+
+// PUT Endpoint - Update a Document
+app.put('/documents/:document_id', async (req, res) => {
+	const { document_id } = req.params;
+	const data = req.body;
+
+	try {
+		const { query, values } = buildUpdateQuery('documents', 'document_id', document_id, data);
+		const result = await pool.query(query, values);
+
+		if (result.rowCount === 0) return res.status(404).json({ success: false, message: 'Document not found' });
+		res.status(200).json({ success: true, message: 'Document updated successfully' });
+	} catch (err) {
+		handleError(res, err, 'Failed to update document');
+	}
+});
+
+
 
 // --+--+-- DELETE ENDPOINTS --+--+--
 
@@ -341,34 +535,85 @@ app.put('/personas/:id', async (req, res) => {
 app.delete('/companies/:id', async (req, res) => {
 	const { id } = req.params;
 	try {
-		await pool.query('DELETE FROM companies WHERE id = $1', [id]);
-		res.status(200).json({ message: 'Company deleted successfully' });
+		const result = await pool.query('DELETE FROM companies WHERE id = $1', [id]);
+		if (result.rowCount === 0) return res.status(404).json({ success: false, message: 'Company not found' });
+		res.status(200).json({ success: true, message: 'Company deleted successfully' });
 	} catch (err) {
-		console.error(err.message);
-		res.status(500).json({ error: 'Server error' });
+		handleError(res, err);
 	}
 });
+
 
 // DELETE Endpoint - Delete a Product
 app.delete('/products/:id', async (req, res) => {
 	const { id } = req.params;
 	try {
-		await pool.query('DELETE FROM products WHERE product_id = $1', [id]);
-		res.status(200).json({ message: 'Product deleted successfully' });
+		const result = await pool.query('DELETE FROM products WHERE product_id = $1', [id]);
+		if (result.rowCount === 0) return res.status(404).json({ success: false, message: 'Product not found' });
+		res.status(200).json({ success: true, message: 'Product deleted successfully' });
 	} catch (err) {
-		console.error(err.message);
-		res.status(500).json({ error: 'Server error' });
+		handleError(res, err);
 	}
 });
+
+// DELETE Endpoint - Remove a single competitor from a product
+app.delete('/products/:product_id/competitors/:competitor_id', async (req, res) => {
+	const { product_id, competitor_id } = req.params;
+	try {
+		await removeRelationship('product_competitors', 'product_id', 'competitor_company_id', product_id, competitor_id);
+		res.status(200).json({ success: true, message: 'Competitor removed from product successfully' });
+	} catch (err) {
+		handleError(res, err);
+	}
+});
+
 
 // DELETE Endpoint - Delete a Persona
 app.delete('/personas/:id', async (req, res) => {
 	const { id } = req.params;
 	try {
-		await pool.query('DELETE FROM personas WHERE persona_id = $1', [id]);
-		res.status(200).json({ message: 'Persona deleted successfully' });
+		const result = await pool.query('DELETE FROM personas WHERE persona_id = $1', [id]);
+		if (result.rowCount === 0) return res.status(404).json({ success: false, message: 'Persona not found' });
+		res.status(200).json({ success: true, message: 'Persona deleted successfully' });
 	} catch (err) {
-		console.error(err.message);
-		res.status(500).json({ error: 'Server error' });
+		handleError(res, err);
 	}
 });
+
+
+// DELETE Endpoint - Remove a single product from a persona
+app.delete('/personas/:persona_id/products/:product_id', async (req, res) => {
+	const { persona_id, product_id } = req.params;
+	try {
+		await removeRelationship('persona_products', 'persona_id', 'product_id', persona_id, product_id);
+		res.status(200).json({ success: true, message: 'Product removed from persona successfully' });
+	} catch (err) {
+		handleError(res, err);
+	}
+});
+
+
+// DELETE Endpoint - Delete a Document
+app.delete('/documents/:document_id', async (req, res) => {
+	const { document_id } = req.params;
+	try {
+		const result = await pool.query('DELETE FROM documents WHERE document_id = $1', [document_id]);
+		if (result.rowCount === 0) return res.status(404).json({ success: false, message: 'Document not found' });
+		res.status(200).json({ success: true, message: 'Document deleted successfully' });
+	} catch (err) {
+		handleError(res, err);
+	}
+});
+
+
+// DELETE Endpoint - Remove a company from a document
+app.delete('/documents/:document_id/companies/:company_id', async (req, res) => {
+	const { document_id, company_id } = req.params;
+	try {
+		await removeRelationship('company_documents', 'document_id', 'company_id', document_id, company_id);
+		res.status(200).json({ success: true, message: 'Company removed from document successfully' });
+	} catch (err) {
+		handleError(res, err);
+	}
+});
+
