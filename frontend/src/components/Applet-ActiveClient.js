@@ -9,13 +9,15 @@ import Tab from '@mui/material/Tab';
 
 import { SharedStateContext } from './_SharedStateComponent';
 
-import AppletActiveClientAbout from './Applet-ActiveClientExt-About';
-import AppletActiveClientProducts from './Applet-ActiveClientExt-Products';
-import AppletActiveClientPersonas from './Applet-ActiveClientExt-Personas';
-import AppletActiveClientCompetitors from './Applet-ActiveClientExt-Competitors';
-import AppletActiveClientDocs from './Applet-ActiveClientExt-Docs';
-import AppletActiveClientTopics from './Applet-ActiveClientExt-Topics';
-import AppletActiveClientSettings from './Applet-ActiveClientExt-Settings';
+import AppletActiveClientAbout from './activeclient/Applet-ActiveClientExt-About';
+import AppletActiveClientProducts from './activeclient/Applet-ActiveClientExt-Products';
+import AppletActiveClientPersonas from './activeclient/Applet-ActiveClientExt-Personas';
+import AppletActiveClientCompetitors from './activeclient/Applet-ActiveClientExt-Competitors';
+import AppletActiveClientKeywords from './activeclient/Applet-ActiveClientExt-Keywords';
+import AppletActiveClientDocs from './activeclient/Applet-ActiveClientExt-Docs';
+import AppletActiveClientTopics from './activeclient/Applet-ActiveClientExt-Topics';
+import AppletActiveClientTracking from './activeclient/Applet-ActiveClientExt-Tracking';
+import AppletActiveClientSettings from './activeclient/Applet-ActiveClientExt-Settings';
 
 export default function AppletViewActiveClient() {
 
@@ -136,7 +138,9 @@ export default function AppletViewActiveClient() {
 		{ text: 'Personas', tab: <AppletActiveClientPersonas /> },
 		{ text: 'Competitors', tab: <AppletActiveClientCompetitors /> },
 		{ text: 'Docs', tab: <AppletActiveClientDocs /> },
+		{ text: 'Keywords', tab: <AppletActiveClientKeywords /> },
 		{ text: 'Topics', tab: <AppletActiveClientTopics /> },
+		{ text: 'Tracking', tab: <AppletActiveClientTracking /> },
 	];
 
 	// Secondary Tab Elements

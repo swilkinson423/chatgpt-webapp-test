@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 
-import { SharedStateContext } from './_SharedStateComponent';
+import { SharedStateContext } from '../_SharedStateComponent';
 import MenuContent from './SidebarExt-MenuContent';
 
 export default function Sidebar() {

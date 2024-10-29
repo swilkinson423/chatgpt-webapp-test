@@ -8,7 +8,7 @@ import Collapse from '@mui/material/Collapse';
 import Popover from '@mui/material/Popover';
 import CircleIcon from '@mui/icons-material/Circle';
 
-import { SharedStateContext } from './_SharedStateComponent';
+import { SharedStateContext } from '../_SharedStateComponent';
 
 export default function ChildListSidebar({ text, view, children, anchorEl }) {
 	

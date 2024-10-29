@@ -4,10 +4,10 @@ import { SharedStateContext } from './_SharedStateComponent.js';
 
 import Box from '@mui/material/Box';
 
-import Sidebar from './Sidebar';
+import Sidebar from './sidebar/Sidebar.js';
 
 import AppletViewAllClient from './Applet-AllClients';
-import AppletViewActiveClient from './Applet-ActiveClient';
+import AppletViewActiveClient from './Applet-ActiveClient.js';
 import AppletAddNewClient from './Applet-NewClient';
 import AppletSettings from './Applet-Settings';
 

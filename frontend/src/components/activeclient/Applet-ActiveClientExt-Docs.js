@@ -22,7 +22,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import EditIcon from '@mui/icons-material/Edit';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
-import { SharedStateContext } from './_SharedStateComponent';
+import { SharedStateContext } from './../_SharedStateComponent';
 
 
 export default function AppletActiveClientDocs() {
@@ -103,16 +103,41 @@ export default function AppletActiveClientDocs() {
 
 
 	return (
-		<Box>
-			<Stack direction="row" justifyContent="space-between" alignItems="center" sx={{mb: '6px'}}>
-				<Typography variant="h5">Documents:</Typography>
-				<Button sx={{ml: 'auto'}} disabled/>
-				<Typography variant="p">Add Documents:</Typography>
-				<Button startIcon={<NoteAddIcon/>} sx={{ml: '5px', width: '100px'}} variant="contained" onClick={() => console.log('need to add this')}>Create</Button>
-				<Button startIcon={<FileOpenIcon/>} sx={{ml: '5px', width: '100px'}} variant="contained" onClick={handleOpenAdd}>Link</Button>
-				<Button startIcon={<UploadFileIcon/>} sx={{ml: '5px', width: '100px'}} variant="contained" onClick={() => console.log('need to add this')}>Upload</Button>
+		<Stack sx={{ justifyContent: 'space-between' }} spacing={2} >
+
+			{/* Header Section */}
+			<Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between' }}>
+				
+				{/* Title */}
+				<Typography 
+					variant='h4' 
+					sx={{ 
+						maxWidth: '40%', 
+						overflow: 'hidden', 
+						whiteSpace: 'nowrap', 
+						textOverflow: 'ellipsis' 
+					}}
+				>
+					Documents:
+				</Typography>
+
+				{/* Button Links */}
+				<Stack direction="row" spacing={1} sx={{ maxWidth: '60%'}}>
+					
+					{/* File Links */}
+					<Button sx={{ml: 'auto'}} disabled/>
+					<Button startIcon={<NoteAddIcon/>} sx={{ml: '5px', width: '100px'}} variant="contained" onClick={() => console.log('need to add this')}>Create</Button>
+					<Button startIcon={<FileOpenIcon/>} sx={{ml: '5px', width: '100px'}} variant="contained" onClick={handleOpenAdd}>Link</Button>
+					<Button startIcon={<UploadFileIcon/>} sx={{ml: '5px', width: '100px'}} variant="contained" onClick={() => console.log('need to add this')}>Upload</Button>
+
+				</Stack>
+
 			</Stack>
 
+
+			{/* Body Section */}
+
+			
 			{/* Document Categories */}
 			{['operationalDocs', 'templates', 'samples', 'others'].map((category) => (
 				<Box key={category} sx={{ boxShadow: 'inset 0 0 5px black', p: 2, mb: 2 }}>
@@ -317,7 +342,7 @@ export default function AppletActiveClientDocs() {
 				</Box>
 			</Dialog>
 
-		</Box>
+		</Stack>
 	);
 }
 

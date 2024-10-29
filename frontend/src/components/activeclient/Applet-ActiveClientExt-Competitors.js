@@ -1,20 +1,19 @@
 import React, { useState, useContext } from 'react';
 
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
 
 import Collapse from '@mui/material/Collapse';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
-import { SharedStateContext } from './_SharedStateComponent';
+import { SharedStateContext } from './../_SharedStateComponent';
 
 export default function AppletActiveClientCompetitors() {
 
@@ -32,13 +31,48 @@ export default function AppletActiveClientCompetitors() {
 
 	return (
 		
-		<Stack>
-			{/* Overview Header */}
+		<Stack sx={{ justifyContent: 'space-between' }} spacing={2} >
+
+			{/* Header Section */}
 			<Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between' }}>
-				<h1>Competitors Overview</h1>
+				
+				{/* Title */}
+				<Typography 
+					variant='h4' 
+					sx={{ 
+						maxWidth: '40%', 
+						overflow: 'hidden', 
+						whiteSpace: 'nowrap', 
+						textOverflow: 'ellipsis' 
+					}}
+				>
+					Competitors:
+				</Typography>
+
+				{/* Button Links */}
+				<Stack direction="row" spacing={1} sx={{ maxWidth: '60%'}}>
+					
+					{/* Social Links */}
+					{/* {socials.map((social) => (social.url && (
+						<Button
+							key={social.name}
+							startIcon={social.icon}
+							size="small"
+							fontSize="small"
+							href={social.url}
+							variant="contained"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							{social.name}
+						</Button>
+					)))} */}
+
+				</Stack>
+
 			</Stack>
 
-			<Divider />
+			{/* Body Section */}
 
 			{/* Competitors */}
 			<Stack sx={{ overflowY: 'auto' }}>

@@ -21,7 +21,7 @@ import TableRow from '@mui/material/TableRow';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 
-import { SharedStateContext } from './_SharedStateComponent';
+import { SharedStateContext } from './../_SharedStateComponent';
 
 export default function AppletActiveClientTopics() {
 
@@ -67,12 +67,40 @@ export default function AppletActiveClientTopics() {
 
 	return (
 
-		<Box >
+		<Stack sx={{ justifyContent: 'space-between' }} spacing={2} >
+
+
 			{/* Header Section */}
-			<Stack direction="row" justifyContent="space-between" alignItems="center">
-				<Typography variant="h5">Topics:</Typography>
-				<Button variant="contained" onClick={() => setOpenDialog(true)}>Add New +</Button>
+			<Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between' }}>
+				
+				{/* Title */}
+				<Typography 
+					variant='h4' 
+					sx={{ 
+						maxWidth: '40%', 
+						overflow: 'hidden', 
+						whiteSpace: 'nowrap', 
+						textOverflow: 'ellipsis' 
+					}}
+				>
+					Topics:
+				</Typography>
+
+				{/* Button Links */}
+				<Stack direction="row" spacing={1} sx={{ maxWidth: '60%'}}>
+					
+					{/* Topic Links */}
+					<Button variant="contained" onClick={() => setOpenDialog(true)}>Add New +</Button>
+
+				</Stack>
+
 			</Stack>
+
+
+			{/* Body Section */}
+			<Typography variant='p' sx={{ color: '#ff0000' }}>{"{Pending Development}"}</Typography>
+
+			
 
 			{/* Pending Approval Table */}
 			<TableSection
@@ -124,7 +152,8 @@ export default function AppletActiveClientTopics() {
 					<Button fullWidth variant="contained" onClick={handleAddTopic} sx={{ mt: 2 }}>Add Topic</Button>
 				</Box>
 			</Dialog>
-		</Box>
+
+		</Stack>
 	);
 }
 

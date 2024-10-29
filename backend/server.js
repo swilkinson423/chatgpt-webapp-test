@@ -450,9 +450,7 @@ const buildUpdateQuery = (table, idColumn, id, data) => {
 app.put('/companies/:id', async (req, res) => {
 	const { id } = req.params;
 	const data = req.body;
-
-
-
+	
 	try {
 		const { query, values } = buildUpdateQuery('companies', 'id', id, data);
 		const result = await pool.query(query, values);
@@ -468,7 +466,7 @@ app.put('/companies/:id', async (req, res) => {
 app.put('/companies/:id/socials', async (req, res) => {
 	const { id } = req.params;
 	const data = req.body;
-
+	
 	try {
 		const { query, values } = buildUpdateQuery('socials', 'company_id', id, data);
 		const result = await pool.query(query, values);

@@ -28,6 +28,11 @@ export function SharedStateProvider({ children }) {
 	const [currentClientCompetitors, setCurrentClientCompetitors] = useState([]);
 	const [currentClientDocs, setCurrentClientDocs] = useState([]);
 
+	// --+--+-- Editing State --+--+--
+	const [isEditing, setIsEditing] = useState(null);
+	const [currentElement, setCurrentElement] = useState(null);
+	const [currentText, setCurrentText] = useState(null);
+
 	return (
 		<SharedStateContext.Provider value={{
 												// UI States
@@ -53,6 +58,12 @@ export function SharedStateProvider({ children }) {
 												currentClientProducts, setCurrentClientProducts,
 												currentClientCompetitors, setCurrentClientCompetitors,
 												currentClientDocs, setCurrentClientDocs,
+
+												// Editing State
+												isEditing, setIsEditing,
+												currentElement, setCurrentElement,
+												currentText, setCurrentText
+
 											}}>
 			{children}
 		</SharedStateContext.Provider>
