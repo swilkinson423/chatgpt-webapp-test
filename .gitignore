@@ -11,6 +11,8 @@ backend/package-lock.json
 
 # Credentials & API keys
 /config
+/frontend/config
+/backend/config
 pool.js
 .env
 .env.local
