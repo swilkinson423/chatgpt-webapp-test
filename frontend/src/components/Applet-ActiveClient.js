@@ -10,6 +10,9 @@ import Tab from '@mui/material/Tab';
 import { SharedStateContext } from './_SharedStateComponent';
 
 import AppletActiveClientAbout from './Applet-ActiveClientExt-About';
+import AppletActiveClientProducts from './Applet-ActiveClientExt-Products';
+import AppletActiveClientPersonas from './Applet-ActiveClientExt-Personas';
+import AppletActiveClientCompetitors from './Applet-ActiveClientExt-Competitors';
 import AppletActiveClientDocs from './Applet-ActiveClientExt-Docs';
 import AppletActiveClientTopics from './Applet-ActiveClientExt-Topics';
 import AppletActiveClientSettings from './Applet-ActiveClientExt-Settings';
@@ -129,6 +132,9 @@ export default function AppletViewActiveClient() {
 	// Main Tab Elements
 	const viewTabsMain = [
 		{ text: 'About', tab: <AppletActiveClientAbout /> },
+		{ text: 'Products', tab: <AppletActiveClientProducts /> },
+		{ text: 'Personas', tab: <AppletActiveClientPersonas /> },
+		{ text: 'Competitors', tab: <AppletActiveClientCompetitors /> },
 		{ text: 'Docs', tab: <AppletActiveClientDocs /> },
 		{ text: 'Topics', tab: <AppletActiveClientTopics /> },
 	];

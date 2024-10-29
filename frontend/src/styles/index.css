@@ -221,7 +221,6 @@ html, body, #root, #app {
 /* --- Applet styles  --------------- */
 /* ---------------------------------- */
 #applet {
-    height: 100%;
     margin: 0;
     padding: 0;
     display: block;
@@ -248,7 +247,7 @@ html, body, #root, #app {
 
 .view-body {
     outline: 1px solid var(--color-dark);
-    height: calc(90% - 32px);
+    height: calc(90% - 56px);
     width: calc(100% - 64px);
     margin: 0;
     padding: 16px 32px;
@@ -256,15 +255,7 @@ html, body, #root, #app {
 }
 
 .view-body .client-paper {
-    margin: 0 0 16px 0;
-    padding: 16px 16px 32px 16px;
     background-color: var(--sidebar-background-color-light);
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s;
-}
-
-.view-body .client-paper:hover {
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
 }
 
 .view-body .client-paper.dark {
@@ -272,20 +263,10 @@ html, body, #root, #app {
     color: var(--color-light);
 }
 
-.view-body .client-paper .client-container {
-    padding: 16px 16px;
-    margin: 0;
-    box-shadow: inset 0 0 10px var(--color-dark);
-    border-radius: 10px;
-}
 
-.view-body .client-paper .client-card {
-    min-width: 30%;
-    border-radius: 5px;
-    text-align: justify;
-}
-
-/* Scrollbar Styling */
+/* ---------------------------------- */
+/* --- Scrollbar styles ------------- */
+/* ---------------------------------- */
 .view-body::-webkit-scrollbar, .client-container::-webkit-scrollbar {
     width: 8px;
 }

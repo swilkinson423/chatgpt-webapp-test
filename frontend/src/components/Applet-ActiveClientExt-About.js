@@ -27,21 +27,7 @@ import { ReactComponent as LogoTikTok } from "./../assets/links-tiktok.svg"
 
 export default function AppletActiveClientAbout() {
 
-	const { 
-		isDarkMode, 
-		currentClientOverview, 
-		currentClientSocials, 
-		currentClientPersonas, 
-		currentClientProducts, 
-		currentClientCompetitors, 
-	} = useContext(SharedStateContext);
-	
-	const [expanded, setExpanded] = useState('none');
-
-	// Toggle expanded state for collapsible content
-	const handleExpandClick = (competitorUrl) => {
-		setExpanded(expanded === competitorUrl ? 'none' : competitorUrl);
-	};
+	const { currentClientOverview, currentClientSocials } = useContext(SharedStateContext);
 	
 	// Social Links with dynamic assignment
 	const socials = [
@@ -66,7 +52,6 @@ export default function AppletActiveClientAbout() {
 					{socials.map((social) => (
 						social.url && (
 							<Button
-								className='client-socials'
 								key={social.name}
 								startIcon={social.icon}
 								size="small"
@@ -86,122 +71,6 @@ export default function AppletActiveClientAbout() {
 			<h3>{currentClientOverview?.description}</h3>
 			<p>{currentClientOverview?.descriptionaddon}</p>
 
-			<Divider />
-
-			{/* Target Personas */}
-			<h2>Target Personas</h2>
-			<Stack className="client-container persona" direction="row" spacing={2}>
-				{currentClientPersonas?.map((persona) => (			
-					<Card className="client-card persona" key={persona.persona_id} variant="outlined">
-						<CardContent>
-							<h1>{persona.name}</h1>
-							<p>{persona.personaSummary || "No summary available"}</p>
-							<p>{persona.industrySummary || "No industry information"}</p>
-							<p>{persona.services || "No services listed"}</p>
-						</CardContent>
-					</Card>
-				))}
-			</Stack>
-			
-			<Divider />
-
-			{/* Products & Services */}
-			<h2>Products & Services</h2>
-			{currentClientProducts?.map((product) => (
-				<Paper
-					className={`client-paper product ${isDarkMode && 'dark'}`}
-					key={product.product_id}
-					elevation={3}
-				>
-					<Stack>
-						<h1>{product.name}</h1>
-						<p>{product.description}</p>
-					</Stack>
-
-					<h4>Competitors:</h4>
-					<Box className="client-container product" sx={{ height: '500px', overflowY: 'auto' }}>
-						{currentClientCompetitors
-							.filter(competitor => competitor.product_id === product.product_id)
-							.map(({ competitor_info, product_id }) => {
-								const { id, name, url, description, screenshot, pros, cons } = competitor_info;
-
-								return (
-									<Card
-										className="client-card product"
-										key={id}
-										variant="outlined"
-										sx={{ display: 'flex', flexDirection: 'row', marginBottom: '15px' }}
-									>
-										{/* Competitor Info */}
-										<Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-											<Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
-												<CardMedia
-													component="img"
-													sx={{
-														height: '270px',
-														width: '480px',
-														objectFit: 'fill',
-														borderRadius: '5px',
-														p: '5px',
-														boxShadow: 'inset 0 0 15px #000',
-														flexShrink: 0
-													}}
-													image={screenshot || 'fallback-image.png'}
-													onError={(e) => { e.target.onerror = null; e.target.src = 'fallback-image.png'; }}
-												/>
-
-												<Stack sx={{ height: '200px' }}>
-													<CardContent sx={{ pt: 0 }}>
-														<Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
-															<h2 sx={{ mr: 'auto' }}>{name}</h2>
-															<Button
-																className='competitor-url'
-																href={url}
-																size="small"
-																sx={{ ml: 'auto' }}
-																variant="contained"
-																target="_blank"
-																rel="noopener noreferrer"
-															>
-																Visit Website
-															</Button>
-														</Stack>
-														<hr />
-														<h4>{description}</h4>
-													</CardContent>
-
-													{/* Expandable Pros & Cons */}
-													<CardActions sx={{ mt: 'auto' }}>
-														<Button
-															startIcon={expanded === url ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-															size="small"
-															fontSize="small"
-															onClick={() => handleExpandClick(url)}
-															aria-expanded={expanded === url}
-															aria-label="show more"
-														>
-															{expanded === url ? 'Less' : 'More'}
-														</Button>
-													</CardActions>
-												</Stack>
-											</Stack>
-
-											<Collapse in={expanded === url} timeout="auto" unmountOnExit>
-												<CardContent>
-													<ul>
-														<li><strong>Pros:</strong> {pros || "No pros listed"}</li>
-														<li><strong>Cons:</strong> {cons || "No cons listed"}</li>
-													</ul>
-												</CardContent>
-											</Collapse>
-										</Box>
-									</Card>
-								);
-							})
-						}
-					</Box>
-				</Paper>
-			))}
 		</Stack>
 	);
 }
