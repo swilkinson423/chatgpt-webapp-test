@@ -1,23 +1,63 @@
 import axios from 'axios';
 
+// ----------------------------------------------
+// -------- GOOGLE API DECLARATIONS -------------
+// ----------------------------------------------
+
+
+// --+--+-- Google Drive Folders --+--+---------
+
 // Google Drive Folder IDs
 const rootFolderId = null;
 const clientsFolderId = '1F3AMFb_DJMbjrbtrgb6SwG5y6wSlh3-X';
 
 
-// ----------------------------------------------
-// -------- Helper Functions --------------------
-// ----------------------------------------------
-
 // Gets the IDs for parent folder based on name
-async function getParentFolderId(folderName) {
+export async function getParentFolderId(folderName) {
 	switch (folderName) {
+		
 		case 'clientFiles':
 			return clientsFolderId;
+		
 		default:
-			return null;
+			return rootFolderId;
+
 	}
-};
+}
+
+
+// --+--+-- Google Drive Template Files --+--+--
+
+// Google Drive Template File IDs
+const clientOverviewTemplate = '1uoiW8Q2PUaVSosAlIGGMoX8AT_3JqpUJDLghz5W1R-Q';
+const competitorGuideTemplate = '1v2l-8wNlzGbCe2ezcMmDTRX2ArcmSiiq49XZHMVZxgc';
+const personaOverviewTemplate = '1Ln3NZurM0cK-0T38t-J6-ly6phDlDtp43zwrWxVJaDU';
+const styleGuideTemplate = '1eVrG8R1RrjGvRM-8NtpPdhCY6dS_g3iWV2Ia9Zeugdw';
+
+
+export async function getFileId(fileToGet) {
+	
+	switch (fileToGet) {
+		
+		case 'clientOverviewTemplate':
+			return clientOverviewTemplate;
+		
+		case 'competitorGuideTemplate':
+			return competitorGuideTemplate;
+
+		case 'personaOverviewTemplate':
+			return personaOverviewTemplate;
+
+		case 'styleGuideTemplate':
+			return styleGuideTemplate;
+		
+		default:
+			return fileToGet;
+
+	}
+}
+
+
 
 // ----------------------------------------------
 // -------- Utility Functions -------------------
