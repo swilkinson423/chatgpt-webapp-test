@@ -9,33 +9,54 @@ import Typography from '@mui/material/Typography';
 
 import { SharedStateContext } from './_SharedStateComponent';
 
+import { createGoogleDriveFolder } from '../utils/googleDriveFunctions';
+
 export default function AppletAddNewClient() {
 	const { setClients, setOpenSubMenu, setActiveSidebarSubitem, setAppletViewState, setActiveClientID } = useContext(SharedStateContext);
 
 	const [newClient, setNewClient] = useState({
 		name: '',
 		website: '',
+		drivefolder: '',
 		is_client: true,
 	});
 
 	// Handle form input for new clients
 	const handleInputChange = (e) => {
 		const { name, value } = e.target;
-		setNewClient((prev) => ({ ...prev, [name]: value }));
+		setNewClient((prev) => ({
+			...prev,
+			[name]: value,
+		}));
 	};
 
 	// Create a new client
 	const addClient = async () => {
 		try {
-			const postNew = await axios.post(`http://localhost:3000/companies/`, newClient);
-			setActiveClientID(postNew.data.data.id); // Assuming response is `{ success: true, data: { id: ... } }`
+			// Create a Google Drive folder for the new client
+			const responseGoogleDrive = await createGoogleDriveFolder(newClient.name, 'clientFiles');
+			const folderId = responseGoogleDrive.folder;
+
+			// Update the drivefolder field with the created folder ID
+			setNewClient((prev) => ({
+				...prev,
+				drivefolder: folderId,
+			}));
+			
+			// Create a new client
+			const postNew = await axios.post(`http://localhost:3000/companies/`, {
+				...newClient,
+				drivefolder: folderId,
+			});
+
+			setActiveClientID(postNew.data.data.id);
 
 			// Update UI state and fetch clients
-			const response = await axios.get(`http://localhost:3000/clients/`);
-			setClients(response.data.data);
+			const responseUI = await axios.get(`http://localhost:3000/clients/`);
+			setClients(responseUI.data.data);
 			
 			// Reset form and navigate to new client view
-			setNewClient({ name: '', website: '', is_client: true });
+			setNewClient({ name: '', website: '', drivefolder: '', is_client: true });
 			setOpenSubMenu('active-clients');
 			setActiveSidebarSubitem(`active-clients-${postNew.data.data.id}`);
 			setAppletViewState('active-clients');

@@ -4,44 +4,55 @@ export const SharedStateContext = createContext();
 
 export function SharedStateProvider({ children }) {
 
-	// Determines if theme is set to dark mode or light mode.
-	const [isDarkMode, setIsDarkMode] = useState(true);
+	// --+--+-- General UI States --+--+--
+	const [isDarkMode, setIsDarkMode] = useState(true); 						// Determines if theme is set to dark mode or light mode.
 
-	// Determines if Sidebar is collapsed or expanded.
-	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+	// --+--+-- Sidebar States --+--+--
+	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false); 		// Determines if Sidebar is collapsed or expanded.
+	const [openSubMenu, setOpenSubMenu] = useState('none'); 					// Determines which sidebar sub-menu is open.
+	const [activeSidebarSubitem, setActiveSidebarSubitem] = useState('none'); 	// Determines which sidebar sub-item is active.
 
-	// Determines which sidebar sub-menu is open.
-	const [openSubMenu, setOpenSubMenu] = useState('none');
+	// --+--+-- Applet States --+--+--
+	const [appletViewState, setAppletViewState] = useState("all-clients"); 		// Determines which applet is rendered.
+	const [openTab, setOpenTab] = useState("About"); 							// Determines which active client tab is open.
 
-	// Determines which sidebar sub-item is active.
-	const [activeSidebarSubitem, setActiveSidebarSubitem] = useState('none');
+	// --+--+-- Client List and Active Client States --+--+--
+	const [clients, setClients] = useState([]); 								// Holds the active client list
+	const [activeClientID, setActiveClientID] = useState("none"); 				// Determines which client is rendered.
 
-	// Determines which applet is rendered.
-	const [appletViewState, setAppletViewState] = useState("all-clients");
-
-	// Determines which active client tab is open.
-	const [openTab, setOpenTab] = useState("About");
-
-	// Holds the active client list
-	const [clients, setClients] = useState([]);
-
-	// Determines which client is rendered.
-	const [activeClientID, setActiveClientID] = useState("none");
-
-	// The current client object
-	const [currentClient, setCurrentClient] = useState("none");
+	// --+--+-- Active Client States --+--+--				
+	const [currentClientOverview, setCurrentClientOverview] = useState(null);	// The data for the current active client
+	const [currentClientSocials, setCurrentClientSocials] = useState([]);
+	const [currentClientPersonas, setCurrentClientPersonas] = useState([]);
+	const [currentClientProducts, setCurrentClientProducts] = useState([]);
+	const [currentClientCompetitors, setCurrentClientCompetitors] = useState([]);
+	const [currentClientDocs, setCurrentClientDocs] = useState([]);
 
 	return (
 		<SharedStateContext.Provider value={{
+												// UI States
 												isDarkMode, setIsDarkMode,
+												
+												// Sidebar States
 												isSidebarCollapsed, setIsSidebarCollapsed,
 												openSubMenu, setOpenSubMenu,
 												activeSidebarSubitem, setActiveSidebarSubitem,
+
+												// Applet States
 												appletViewState, setAppletViewState,
 												openTab, setOpenTab,
+
+												// Client List and Active Client ID
 												clients, setClients,
 												activeClientID, setActiveClientID,
-												currentClient, setCurrentClient
+
+												// Active Client Data
+												currentClientOverview, setCurrentClientOverview,
+												currentClientSocials, setCurrentClientSocials,
+												currentClientPersonas, setCurrentClientPersonas,
+												currentClientProducts, setCurrentClientProducts,
+												currentClientCompetitors, setCurrentClientCompetitors,
+												currentClientDocs, setCurrentClientDocs,
 											}}>
 			{children}
 		</SharedStateContext.Provider>

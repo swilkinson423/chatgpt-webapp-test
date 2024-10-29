@@ -3,7 +3,10 @@ import axios from 'axios';
 
 import { SharedStateContext } from './_SharedStateComponent';
 
+import { deleteGoogleDriveFolder } from '../utils/googleDriveFunctions';
+
 export default function AppletActiveClientSettings() {
+	
 	const {
 		setOpenSubMenu,
 		setAppletViewState,
@@ -11,29 +14,45 @@ export default function AppletActiveClientSettings() {
 		clients,
 		setClients,
 		setActiveClientID,
-		currentClient,
-		setCurrentClient,
+
+		currentClientOverview, 
+		setCurrentClientOverview,
+		
+		currentClientSocials, 
+		setCurrentClientSocials,
+		
+		currentClientPersonas, 
+		setCurrentClientPersonas,
+		
+		currentClientProducts, 
+		setCurrentClientProducts,
+		
+		currentClientCompetitors, 
+		setCurrentClientCompetitors
+	
 	} = useContext(SharedStateContext);
 
+
 	const [isEditing, setIsEditing] = useState(false);
+
 
 	// Handle form input for editing client info
 	const handleEditChange = (e) => {
 		const { name, value } = e.target;
-		setCurrentClient((prev) => ({
+		setCurrentClientOverview((prev) => ({
 			...prev,
 			[name]: value,
 		}));
 	};
 
-	// Update a client
+	// Update a client Overview
 	const updateClient = async () => {
 		try {
-			await axios.put(`http://localhost:3000/companies/${currentClient.id}`, currentClient);
-			setClients(clients.map((client) => (client.id === currentClient.id ? currentClient : client)));
-			setActiveClientID(currentClient.id);
+			await axios.put(`http://localhost:3000/companies/${currentClientOverview.id}`, currentClientOverview);
+			setClients(clients.map((client) => (client.id === currentClientOverview.id ? currentClientOverview : client)));
+			setActiveClientID(currentClientOverview.id);
 			setAppletViewState('active-clients');
-			setOpenTab('about');
+			setOpenTab('About');
 			setIsEditing(false);
 		} catch (err) {
 			console.error('Error updating client:', err);
@@ -44,8 +63,15 @@ export default function AppletActiveClientSettings() {
 	// Delete a client
 	const deleteClient = async () => {
 		try {
-			await axios.delete(`http://localhost:3000/companies/${currentClient.id}`);
-			setClients(clients.filter((client) => client.id !== currentClient.id));
+			// Delete the client's Google Drive folder
+			const responseGoogleDrive = await deleteGoogleDriveFolder(currentClientOverview.drivefolder);
+			console.log('Folder deleted:', responseGoogleDrive);
+			
+			// Delete client
+			await axios.delete(`http://localhost:3000/companies/${currentClientOverview.id}`);
+			
+			// Update UI state and fetch clients
+			setClients(clients.filter((client) => client.id !== currentClientOverview.id));
 			setActiveClientID('all-clients');
 			setAppletViewState('all-clients');
 			setOpenSubMenu('none');
@@ -83,7 +109,7 @@ export default function AppletActiveClientSettings() {
 									name="name"
 									placeholder="Client Name"
 									className="form-control mb-3"
-									value={currentClient.name || ''}
+									value={currentClientOverview.name || ''}
 									onChange={handleEditChange}
 								/>
 
@@ -93,7 +119,7 @@ export default function AppletActiveClientSettings() {
 									name="description"
 									placeholder="Client Description"
 									className="form-control mb-3"
-									value={currentClient.description || ''}
+									value={currentClientOverview.description || ''}
 									onChange={handleEditChange}
 								/>
 
@@ -103,7 +129,7 @@ export default function AppletActiveClientSettings() {
 									name="descriptionaddon"
 									placeholder="Additional Client Information"
 									className="form-control mb-3"
-									value={currentClient.descriptionaddon || ''}
+									value={currentClientOverview.descriptionaddon || ''}
 									onChange={handleEditChange}
 								/>
 
@@ -114,7 +140,7 @@ export default function AppletActiveClientSettings() {
 									name="website"
 									placeholder="Client Website"
 									className="form-control mb-3"
-									value={currentClient.website || ''}
+									value={currentClientOverview.website || ''}
 									onChange={handleEditChange}
 								/>
 							</>

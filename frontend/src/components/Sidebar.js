@@ -9,7 +9,13 @@ import { SharedStateContext } from './_SharedStateComponent';
 import MenuContent from './SidebarExt-MenuContent';
 
 export default function Sidebar() {
-	const { isDarkMode, isSidebarCollapsed, setIsSidebarCollapsed, setOpenSubMenu } = useContext(SharedStateContext);
+	
+	const { 
+		isDarkMode, 
+		isSidebarCollapsed, 
+		setIsSidebarCollapsed, 
+		setOpenSubMenu 
+	} = useContext(SharedStateContext);
 
 	// Handle sidebar toggle and reset open submenu
 	const handleSidebarToggle = () => {

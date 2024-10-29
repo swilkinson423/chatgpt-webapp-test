@@ -11,6 +11,7 @@ import CircleIcon from '@mui/icons-material/Circle';
 import { SharedStateContext } from './_SharedStateComponent';
 
 export default function ChildListSidebar({ text, view, children, anchorEl }) {
+	
 	const {
 		isSidebarCollapsed,
 		openSubMenu,

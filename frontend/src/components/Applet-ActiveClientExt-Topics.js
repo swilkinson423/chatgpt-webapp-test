@@ -25,7 +25,7 @@ import { SharedStateContext } from './_SharedStateComponent';
 
 export default function AppletActiveClientTopics() {
 
-	const { currentClient } = useContext(SharedStateContext);
+	const { currentClientOverview } = useContext(SharedStateContext);
 
 	// Table state
 	const [tables, setTables] = useState({

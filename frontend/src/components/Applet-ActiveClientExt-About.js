@@ -27,7 +27,15 @@ import { ReactComponent as LogoTikTok } from "./../assets/links-tiktok.svg"
 
 export default function AppletActiveClientAbout() {
 
-	const { isDarkMode, currentClient } = useContext(SharedStateContext);
+	const { 
+		isDarkMode, 
+		currentClientOverview, 
+		currentClientSocials, 
+		currentClientPersonas, 
+		currentClientProducts, 
+		currentClientCompetitors, 
+	} = useContext(SharedStateContext);
+	
 	const [expanded, setExpanded] = useState('none');
 
 	// Toggle expanded state for collapsible content
@@ -37,14 +45,14 @@ export default function AppletActiveClientAbout() {
 	
 	// Social Links with dynamic assignment
 	const socials = [
-		{ name: "Website", url: currentClient.website, icon: <LogoLaptop /> },
-		{ name: "LinkedIn", url: currentClient.socials?.linkedin, icon: <LogoLinkedIn /> },
-		{ name: "YouTube", url: currentClient.socials?.youtube, icon: <LogoYouTube /> },
-		{ name: "Twitter", url: currentClient.socials?.twitter, icon: <LogoTwitter /> },
-		{ name: "Facebook", url: currentClient.socials?.facebook, icon: <LogoFacebook /> },
-		{ name: "Instagram", url: currentClient.socials?.instagram, icon: <LogoInstagram /> },
-		{ name: "TikTok", url: currentClient.socials?.tiktok, icon: <LogoTikTok /> },
-		{ name: "Pinterest", url: currentClient.socials?.pinterest, icon: <LogoTikTok /> }
+		{ name: "Website", url: currentClientOverview?.website, icon: <LogoLaptop /> },
+		{ name: "LinkedIn", url: currentClientSocials?.linkedin, icon: <LogoLinkedIn /> },
+		{ name: "YouTube", url: currentClientSocials?.youtube, icon: <LogoYouTube /> },
+		{ name: "Twitter", url: currentClientSocials?.twitter, icon: <LogoTwitter /> },
+		{ name: "Facebook", url: currentClientSocials?.facebook, icon: <LogoFacebook /> },
+		{ name: "Instagram", url: currentClientSocials?.instagram, icon: <LogoInstagram /> },
+		{ name: "TikTok", url: currentClientSocials?.tiktok, icon: <LogoTikTok /> },
+		{ name: "Pinterest", url: currentClientSocials?.pinterest, icon: <LogoTikTok /> }
 	];
 
 	return (
@@ -75,15 +83,15 @@ export default function AppletActiveClientAbout() {
 				</Stack>
 			</Stack>
 
-			<h3>{currentClient.description}</h3>
-			<p>{currentClient.descriptionaddon}</p>
+			<h3>{currentClientOverview?.description}</h3>
+			<p>{currentClientOverview?.descriptionaddon}</p>
 
 			<Divider />
 
 			{/* Target Personas */}
 			<h2>Target Personas</h2>
 			<Stack className="client-container persona" direction="row" spacing={2}>
-				{currentClient.personas?.map((persona) => (			
+				{currentClientPersonas?.map((persona) => (			
 					<Card className="client-card persona" key={persona.persona_id} variant="outlined">
 						<CardContent>
 							<h1>{persona.name}</h1>
@@ -99,7 +107,7 @@ export default function AppletActiveClientAbout() {
 
 			{/* Products & Services */}
 			<h2>Products & Services</h2>
-			{currentClient.products?.map((product) => (
+			{currentClientProducts?.map((product) => (
 				<Paper
 					className={`client-paper product ${isDarkMode && 'dark'}`}
 					key={product.product_id}
@@ -112,7 +120,7 @@ export default function AppletActiveClientAbout() {
 
 					<h4>Competitors:</h4>
 					<Box className="client-container product" sx={{ height: '500px', overflowY: 'auto' }}>
-						{currentClient.competitors
+						{currentClientCompetitors
 							.filter(competitor => competitor.product_id === product.product_id)
 							.map(({ competitor_info, product_id }) => {
 								const { id, name, url, description, screenshot, pros, cons } = competitor_info;

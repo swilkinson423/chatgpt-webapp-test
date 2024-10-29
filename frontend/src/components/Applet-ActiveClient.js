@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 
 import Box from '@mui/material/Box';
@@ -16,73 +16,87 @@ import AppletActiveClientSettings from './Applet-ActiveClientExt-Settings';
 
 export default function AppletViewActiveClient() {
 
-	const { openTab, setOpenTab, activeClientID, currentClient, setCurrentClient } = useContext(SharedStateContext);
+	const {
+		openTab,
+		setOpenTab,
+		activeClientID,
+		currentClientOverview,
+		setCurrentClientOverview,
+		setCurrentClientSocials,
+		setCurrentClientPersonas,
+		setCurrentClientProducts,
+		setCurrentClientCompetitors,
+		setCurrentClientDocs,
+	} = useContext(SharedStateContext);
 
-    useEffect(() => {
+	// Track loading state
+	const [loading, setLoading] = useState(true);
+
+	// Fetch client data on load
+	useEffect(() => {
 		setClient();
 		setOpenTab("About");
-    }, [activeClientID]);
+	}, [activeClientID]);
 
+	// Main function to set client data
 	const setClient = async () => {
+		setLoading(true);
 		try {
 			// Fetch client data in parallel
-			const [clientOverview, clientSocials, clientPersonas, clientProducts] = await Promise.all([
-				axios.get(`http://localhost:3000/clients/${activeClientID}`),
-				axios.get(`http://localhost:3000/clients/${activeClientID}/socials`),
-				axios.get(`http://localhost:3000/clients/${activeClientID}/personas`),
-				axios.get(`http://localhost:3000/clients/${activeClientID}/products`)
+			const [clientOverview, clientSocials, clientPersonas, clientProducts, clientDocs] = await Promise.all([
+				axios.get(`http://localhost:3000/companies/${activeClientID}`),
+				axios.get(`http://localhost:3000/companies/${activeClientID}/socials`),
+				axios.get(`http://localhost:3000/companies/${activeClientID}/personas`),
+				axios.get(`http://localhost:3000/companies/${activeClientID}/products`),
+				axios.get(`http://localhost:3000/companies/${activeClientID}/documents`),
+
 			]);
+			
+			// Set individual states for each category
+			setCurrentClientOverview(clientOverview.data.data);
+			setCurrentClientSocials(clientSocials.data.data);
+			setCurrentClientPersonas(clientPersonas.data.data);
+			setCurrentClientProducts(clientProducts.data.data);
+			
+			// Fetch competitors for each product and set state
+			const competitorsArray = await fetchCompetitors(clientProducts.data.data);
+			setCurrentClientCompetitors(competitorsArray);
 
-			// Initialize competitors array
-			const competitorsArray = [];
+			// Categorize documents and set state
+			const categorizedDocs = categorizeDocuments(clientDocs.data.data);
+			setCurrentClientDocs(categorizedDocs);
 
-			// Fetch competitors for each product
-			for (const product of clientProducts.data.data) {
-				try {
-					const competitorsResponse = await axios.get(`http://localhost:3000/products/${product.product_id}/competitors`);
-
-					// Process each competitor
-					for (const competitor of competitorsResponse.data.data) {
-						// If competitor screenshot is missing or placeholder, fetch a new one
-						if (!competitor.screenshot || competitor.screenshot === 'https://placehold.jp/1920x1080.png') {
-							const screenshot = await fetchCompanyScreenshot(competitor.website);
-
-							// Update the competitor company screenshot
-							await axios.put(`http://localhost:3000/companies/${competitor.id}`, { screenshot });
-						}
-						competitorsArray.push({ competitor_info: competitor, product_id: product.product_id });
-					}
-				} catch (error) {
-					console.error(`Error fetching competitors for product ${product.product_id}:`, error);
-				}
-			}
-
-			// Set the client information
-			const client_info = {
-				id: clientOverview.data.data.id,
-				name: clientOverview.data.data.name,
-				website: clientOverview.data.data.website,
-				is_client: clientOverview.data.data.is_client,
-				description: clientOverview.data.data.description,
-				descriptionaddon: clientOverview.data.data.descriptionaddon,
-				socials: clientSocials.data.data,
-				personas: clientPersonas.data.data,
-				products: clientProducts.data.data,
-				competitors: competitorsArray,
-			};
-
-			setCurrentClient(client_info);
 		} catch (error) {
 			console.error("Error setting client data:", error);
+		} finally {
+			setLoading(false);  // Set loading to false once fetching is complete
 		}
 	};
 
-	// Fetch metadata and screenshot for each competitor
+	// Helper function to fetch competitors
+	const fetchCompetitors = async (products) => {
+		const competitorsArray = [];
+		for (const product of products) {
+			try {
+				const competitorsResponse = await axios.get(`http://localhost:3000/products/${product.product_id}/competitors`);
+				for (const competitor of competitorsResponse.data.data) {
+					if (!competitor.screenshot || competitor.screenshot === 'https://placehold.jp/1920x1080.png') {
+						const screenshot = await fetchCompanyScreenshot(competitor.website);
+						await axios.put(`http://localhost:3000/companies/${competitor.id}`, { screenshot });
+					}
+					competitorsArray.push({ competitor_info: competitor, product_id: product.product_id });
+				}
+			} catch (error) {
+				console.error(`Error fetching competitors for product ${product.product_id}:`, error);
+			}
+		}
+		return competitorsArray;
+	};
+
+	// Helper function to fetch company screenshot
 	const fetchCompanyScreenshot = async (targetUrl) => {
 		try {
-			const response = await axios.get(`http://localhost:3000/capture-screenshot`, {
-				params: { url: targetUrl }
-			});
+			const response = await axios.get(`http://localhost:3000/capture-screenshot`, { params: { url: targetUrl } });
 			return response.data.image;
 		} catch (error) {
 			console.error("Error fetching screenshot metadata: ", error);
@@ -90,50 +104,79 @@ export default function AppletViewActiveClient() {
 		}
 	};
 
+	// Helper function to categorize documents
+	const categorizeDocuments = (docs) => {
+		const categorized = { operationalDocs: [], templates: [], samples: [], others: [] };
+		docs.forEach(doc => {
+			switch (doc.category) {
+				case 'operationalDocs':
+					categorized.operationalDocs.push(doc);
+					break;
+				case 'templates':
+					categorized.templates.push(doc);
+					break;
+				case 'samples':
+					categorized.samples.push(doc);
+					break;
+				default:
+					categorized.others.push(doc);
+					break;
+			}
+		});
+		return categorized;
+	};
+
 	// Main Tab Elements
 	const viewTabsMain = [
-		{ text: 'About', tab: <AppletActiveClientAbout/> },
-		{ text: 'Docs', tab: <AppletActiveClientDocs/> },
+		{ text: 'About', tab: <AppletActiveClientAbout /> },
+		{ text: 'Docs', tab: <AppletActiveClientDocs /> },
 		{ text: 'Topics', tab: <AppletActiveClientTopics /> },
 	];
 
 	// Secondary Tab Elements
 	const viewTabsSecondary = [
-		{ text: 'Settings', tab: <AppletActiveClientSettings/> },
+		{ text: 'Settings', tab: <AppletActiveClientSettings /> },
 	];
 
 	return (
 		<>
-			{/* Header Element */}
-			<Stack className='view-header'>
-				{/* Title Element */}
-				<h1 sx={{ display: 'block' }}>{currentClient.name}</h1>
+			{/* Render loading state */}
+			{loading ? (
+				<div>Loading...</div>
+			) : (
+				<>
+					{/* Header Element */}
+					<Stack className='view-header'>
+						{/* Title Element */}
+						<h1 sx={{ display: 'block' }}>{currentClientOverview?.name}</h1>
 
-				{/* Tabs Element */}
-				<Tabs value={openTab}>
-					{/* Main Tab Elements */}
-					{viewTabsMain.map((item, index) => (
-						<Tab key={index} label={item.text} value={item.text} onClick={() => setOpenTab(item.text)} />
-					))}
+						{/* Tabs Element */}
+						<Tabs value={openTab}>
+							{/* Main Tab Elements */}
+							{viewTabsMain.map((item, index) => (
+								<Tab key={index} label={item.text} value={item.text} onClick={() => setOpenTab(item.text)} />
+							))}
 
-					{/* Space Between Elements */}
-					<Tab className='tab-spacer' sx={{ mr: 'auto' }} disabled></Tab>
+							{/* Space Between Elements */}
+							<Tab className='tab-spacer' sx={{ mr: 'auto' }} disabled></Tab>
 
-					{/* Secondary Tab Elements */}
-					{viewTabsSecondary.map((item, index) => (
-						<Tab key={index} label={item.text} value={item.text} onClick={() => setOpenTab(item.text)} />
-					))}
-				</Tabs>
-			</Stack>
+							{/* Secondary Tab Elements */}
+							{viewTabsSecondary.map((item, index) => (
+								<Tab key={index} label={item.text} value={item.text} onClick={() => setOpenTab(item.text)} />
+							))}
+						</Tabs>
+					</Stack>
 
-			{/* Body Element */}
-			<Box className="view-body">
-				{viewTabsMain.concat(viewTabsSecondary).map((item, index) => (item.text === openTab &&
-					<div key={index}>
-						{item.tab}
-					</div>
-				))}
-			</Box>
+					{/* Body Element */}
+					<Box className="view-body">
+						{viewTabsMain.concat(viewTabsSecondary).map((item, index) => (item.text === openTab &&
+							<div key={index}>
+								{item.tab}
+							</div>
+						))}
+					</Box>
+				</>
+			)}
 		</>
 	);
 };

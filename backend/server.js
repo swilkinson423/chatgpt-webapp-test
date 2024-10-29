@@ -1,12 +1,40 @@
 // ----------------------------------------------
-// -------- EXPRESS SERVER SETUP ----------------
+// -------- SERVER SETUP ------------------------
 // ----------------------------------------------
+
+// Imports and initializations
 const express = require('express');
+const cors = require('cors');
+const googleDriveRoutes = require('./routes/googleDriveRoutes');
+const { pool } = require('./config/pool');
 const app = express();
 const port = 3000;
 
-// Middleware to parse JSON
-app.use(express.json({ limit: '10mb' }));
+// Database connection check
+pool.query('SELECT NOW()', (err, res) => {
+	if (err) {
+		console.error('Error connecting to the database', err);
+	} else {
+		console.log('Connection to the database established at:', res.rows[0]);
+	}
+});
+
+// Middleware setup
+app.use(express.json({ limit: '10mb' })); 	// Parse JSON bodies
+app.use(cors({								// Enable cross-port communication w/ CORS	
+	origin: pool.options.frontend,
+}));
+
+// Google API Routes setup
+app.use('/api/google-drive', googleDriveRoutes);
+
+// Graceful shutdown for Postgres pool
+process.on('SIGINT', () => {
+	pool.end(() => {
+		console.log('Postgres pool has ended');
+		process.exit(0);
+	});
+});
 
 // Start server and handle potential startup errors
 app.listen(port, (err) => {
@@ -17,35 +45,6 @@ app.listen(port, (err) => {
 	console.log(`App running on http://localhost:${port}`);
 });
 
-
-// ----------------------------------------------
-// -------- NODE <> POSTGRES CONNECTION --------
-// ----------------------------------------------
-const { pool } = require('./pool');
-pool.query('SELECT NOW()', (err, res) => {
-	if (err) {
-		console.error('Error connecting to the database', err);
-	} else {
-		console.log('Connection to the database established at:', res.rows[0]);
-	}
-});
-
-// Graceful shutdown for Postgres pool
-process.on('SIGINT', () => {
-	pool.end(() => {
-		console.log('Postgres pool has ended');
-		process.exit(0);
-	});
-});
-
-
-// ----------------------------------------------
-// --- CONNECT FRONT<>BACK ON DIFFERENT PORTS ---
-// ----------------------------------------------
-const cors = require('cors');
-app.use(cors({
-	origin: pool.options.frontend,
-}));
 
 
 // ----------------------------------------------
@@ -160,8 +159,8 @@ app.get('/clients', async (req, res) => {
 	}
 });
 
-// GET Endpoint - Client Overview
-app.get('/clients/:id', async (req, res) => {
+// GET Endpoint - Company Overview
+app.get('/companies/:id', async (req, res) => {
 	const { id } = req.params;
 	try {
 		const result = await pool.query('SELECT * FROM companies WHERE id = $1', [id]);
@@ -172,8 +171,8 @@ app.get('/clients/:id', async (req, res) => {
 	}
 });
 
-// GET Endpoint - Client Socials
-app.get('/clients/:id/socials', async (req, res) => {
+// GET Endpoint - Company Socials
+app.get('/companies/:id/socials', async (req, res) => {
 	const { id } = req.params;
 	try {
 		const result = await pool.query('SELECT * FROM socials WHERE company_id = $1', [id]);
@@ -184,8 +183,8 @@ app.get('/clients/:id/socials', async (req, res) => {
 	}
 });
 
-// GET Endpoint - All Client Personas
-app.get('/clients/:id/personas', async (req, res) => {
+// GET Endpoint - All Company Personas
+app.get('/companies/:id/personas', async (req, res) => {
 	const { id } = req.params;
 	try {
 		const result = await pool.query('SELECT * FROM personas WHERE company_id = $1', [id]);
@@ -195,8 +194,8 @@ app.get('/clients/:id/personas', async (req, res) => {
 	}
 });
 
-// GET Endpoint - All Client Products
-app.get('/clients/:id/products', async (req, res) => {
+// GET Endpoint - All Company Products
+app.get('/companies/:id/products', async (req, res) => {
 	const { id } = req.params;
 	try {
 		const result = await pool.query('SELECT * FROM products WHERE company_id = $1', [id]);
@@ -315,11 +314,11 @@ app.get('/documents/:document_id/companies', async (req, res) => {
 
 // POST Endpoint - Create a new Company
 app.post('/companies', async (req, res) => {
-	const { name, website, is_client } = req.body;
+	const { name, website, drivefolder, is_client } = req.body;
 	try {
 		const result = await pool.query(
-			'INSERT INTO companies (name, website, is_client) VALUES ($1, $2, $3) RETURNING id',
-			[name, website, is_client]
+			'INSERT INTO companies (name, website, drivefolder, is_client) VALUES ($1, $2, $3, $4) RETURNING id',
+			[name, website, drivefolder, is_client]
 		);
 		const newCompanyId = result.rows[0].id;
 
@@ -451,6 +450,8 @@ const buildUpdateQuery = (table, idColumn, id, data) => {
 app.put('/companies/:id', async (req, res) => {
 	const { id } = req.params;
 	const data = req.body;
+
+
 
 	try {
 		const { query, values } = buildUpdateQuery('companies', 'id', id, data);

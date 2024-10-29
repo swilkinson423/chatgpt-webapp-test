@@ -20,6 +20,7 @@ import { SharedStateContext } from './_SharedStateComponent';
 import ChildListSidebar from './SidebarExt-MenuContentExt-ChildList';
 
 export default function MenuContent() {
+	
 	const {
 		isSidebarCollapsed,
 		openSubMenu,
@@ -49,6 +50,7 @@ export default function MenuContent() {
 
 	return (
 		<Stack id="sidebar-menucontent">
+			
 			{/* Primary Menu Items */}
 			<List dense>
 				{mainListItems.map((item, index) => (
