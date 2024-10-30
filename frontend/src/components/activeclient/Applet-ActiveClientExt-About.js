@@ -11,14 +11,14 @@ import XIcon from '@mui/icons-material/X';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
-import { ReactComponent as LogoTikTok } from "./../../assets/links-tiktok.svg"
+import { ReactComponent as LogoTikTok } from "./../../.assets/links-tiktok.svg"
 import PinterestIcon from '@mui/icons-material/Pinterest';
 import RedditIcon from '@mui/icons-material/Reddit';
 
-import EditableField from '../reusable/EditableField';
-import { updateClientOverview, updateClientSocials } from '../../utils/databaseFunctions';
+import EditableField from '../_utils/EditableField';
+import { updateClientOverview, updateClientSocials } from '../../_utils/databaseFunctions';
 
-import { SharedStateContext } from './../_SharedStateComponent';
+import { SharedStateContext } from '../_utils/_SharedStateComponent';
 
 
 // TODO - Recombine the socials into the companies table as an array.

@@ -7,9 +7,9 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-import { SharedStateContext } from './_SharedStateComponent';
+import { SharedStateContext } from './_utils/_SharedStateComponent';
 
-import { createGoogleDriveFolder } from '../utils/googleDriveFunctions';
+import { createGoogleDriveFolder } from '../_utils/googleDriveFunctions';
 
 
 // TODO - Update the 'add client' functionality to create the full folder structure.

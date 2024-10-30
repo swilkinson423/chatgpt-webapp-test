@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { SharedStateContext } from './_SharedStateComponent';
+import { SharedStateContext } from './_utils/_SharedStateComponent';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';

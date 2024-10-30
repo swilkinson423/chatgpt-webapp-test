@@ -4,9 +4,9 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-import { SharedStateContext } from './../_SharedStateComponent';
+import { SharedStateContext } from '../_utils/_SharedStateComponent';
 
-import { deleteClient } from './../../utils/databaseFunctions';
+import { deleteClient } from './../../_utils/databaseFunctions';
 
 export default function AppletActiveClientSettings() {
 	

@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 
-import { SharedStateContext } from './_SharedStateComponent';
+import { SharedStateContext } from './_utils/_SharedStateComponent';
 
 export default function AppletViewAllClient() {
 

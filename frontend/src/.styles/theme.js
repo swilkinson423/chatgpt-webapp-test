@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { createTheme } from '@mui/material/styles';
 
-import { SharedStateContext } from './../components/_SharedStateComponent';
+import { SharedStateContext } from '../components/_utils/_SharedStateComponent';
 
 
 export default function MyTheme() {

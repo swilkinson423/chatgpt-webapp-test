@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { SharedStateContext } from './../_SharedStateComponent';
+import { SharedStateContext } from '../_utils/_SharedStateComponent';
 
 export default function AppletActiveClientTracking() {
 

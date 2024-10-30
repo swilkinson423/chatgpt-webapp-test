@@ -13,7 +13,7 @@ import Collapse from '@mui/material/Collapse';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
-import { SharedStateContext } from './../_SharedStateComponent';
+import { SharedStateContext } from '../_utils/_SharedStateComponent';
 
 
 // TODO - Add ability to add competitors. 

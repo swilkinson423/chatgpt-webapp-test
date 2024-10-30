@@ -22,7 +22,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import EditIcon from '@mui/icons-material/Edit';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
-import { SharedStateContext } from './../_SharedStateComponent';
+import { SharedStateContext } from '../_utils/_SharedStateComponent';
 
 
 // TODO - Add ability to create new docs (and create a corresponding Gdocs).

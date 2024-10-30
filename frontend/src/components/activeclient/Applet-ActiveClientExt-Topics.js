@@ -21,7 +21,7 @@ import TableRow from '@mui/material/TableRow';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 
-import { SharedStateContext } from './../_SharedStateComponent';
+import { SharedStateContext } from '../_utils/_SharedStateComponent';
 
 export default function AppletActiveClientTopics() {
 

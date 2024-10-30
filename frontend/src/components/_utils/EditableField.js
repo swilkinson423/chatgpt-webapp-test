@@ -8,7 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 
-import { SharedStateContext } from './../_SharedStateComponent';
+import { SharedStateContext } from './_SharedStateComponent';
 
 // TODO - Replace the text fields for active client view with these editable fields
 // TODO - - Add fucntionality for editing socials

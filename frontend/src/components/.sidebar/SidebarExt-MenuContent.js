@@ -16,7 +16,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 
 
-import { SharedStateContext } from '../_SharedStateComponent';
+import { SharedStateContext } from '../_utils/_SharedStateComponent';
 import ChildListSidebar from './SidebarExt-MenuContentExt-ChildList';
 
 export default function MenuContent() {

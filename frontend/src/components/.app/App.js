@@ -1,15 +1,15 @@
 import React, { useContext } from 'react';
 
-import { SharedStateContext } from './_SharedStateComponent.js';
+import { SharedStateContext } from '../_utils/_SharedStateComponent.js';
 
 import Box from '@mui/material/Box';
 
-import Sidebar from './sidebar/Sidebar.js';
+import Sidebar from './../.sidebar/Sidebar.js';
 
-import AppletViewAllClient from './Applet-AllClients';
-import AppletViewActiveClient from './Applet-ActiveClient.js';
-import AppletAddNewClient from './Applet-NewClient';
-import AppletSettings from './Applet-Settings';
+import AppletViewAllClient from './../Applet-AllClients.js';
+import AppletViewActiveClient from './../activeclient/Applet-ActiveClient.js';
+import AppletAddNewClient from './../Applet-NewClient.js';
+import AppletSettings from './../Applet-Settings.js';
 
 export default function App() {
 
