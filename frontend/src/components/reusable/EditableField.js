@@ -10,6 +10,14 @@ import SaveIcon from '@mui/icons-material/Save';
 
 import { SharedStateContext } from './../_SharedStateComponent';
 
+// TODO - Replace the text fields for active client view with these editable fields
+// TODO - - Add fucntionality for editing socials
+// TODO - - Add fucntionality for editing products
+// TODO - - Add fucntionality for editing personas
+// TODO - - Add fucntionality for editing competitors
+
+// TODO - Fix the mouseEnter/mouseExit functionality to remove unwanted interaction when moving between multiple fields
+
 // Reusable EditableField component
 export default function EditableField({ field, label, value, updateFunction, style }) {
 

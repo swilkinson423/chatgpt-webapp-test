@@ -25,6 +25,16 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { SharedStateContext } from './../_SharedStateComponent';
 
 
+// TODO - Add ability to create new docs (and create a corresponding Gdocs).
+// TODO - Add ability to edit docs metadata (and update metadata for corresponding Gdocs). 
+// TODO - Add ability to delete docs (and delete corresponding Gdocs).
+
+// TODO - Add ability to 'link' an exteral doc using an existing URL.
+// TODO - Add ability to 'upload' an external doc and store the file.
+
+// TODO - Update styling of docs to add a screenshot of doc, if available, or a default image based on file type
+
+
 export default function AppletActiveClientDocs() {
 
 	const {

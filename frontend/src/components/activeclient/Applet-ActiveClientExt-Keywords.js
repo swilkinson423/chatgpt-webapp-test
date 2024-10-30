@@ -5,6 +5,12 @@ import Typography from '@mui/material/Typography';
 
 import { SharedStateContext } from './../_SharedStateComponent';
 
+
+// TODO - Add ability to insert a list of keywords
+// TODO - Add ability to use keywords to populate a dashboard
+// TODO - Add ability to use dashboard information to provide additional KW recs
+// TODO - If possible, incorporate the list of competitors to check their KWs
+
 export default function AppletActiveClientKeywords() {
 
 	const { isDarkMode, currentClientPersonas } = useContext(SharedStateContext);

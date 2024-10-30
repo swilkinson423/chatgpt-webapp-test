@@ -15,6 +15,12 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 import { SharedStateContext } from './../_SharedStateComponent';
 
+
+// TODO - Add ability to add competitors. 
+// TODO - Add ability to edit competitors. 
+// TODO - Add ability to delete competitors. (When deleting a competitor, it should only DELINK that company from the active company)
+
+
 export default function AppletActiveClientCompetitors() {
 
 	const { 

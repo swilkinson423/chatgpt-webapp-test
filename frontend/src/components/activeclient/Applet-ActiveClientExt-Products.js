@@ -6,6 +6,12 @@ import Typography from '@mui/material/Typography';
 
 import { SharedStateContext } from './../_SharedStateComponent';
 
+
+// TODO - Add ability to add products. 
+// TODO - Add ability to edit products. 
+// TODO - Add ability to delete products.
+
+
 export default function AppletActiveClientProducts() {
 
 	const { 

@@ -11,6 +11,16 @@ import { SharedStateContext } from './_SharedStateComponent';
 
 import { createGoogleDriveFolder } from '../utils/googleDriveFunctions';
 
+
+// TODO - Update the 'add client' functionality to create the full folder structure.
+// TODO - Update the 'add client' functionality to populate the folders with default documents.
+// TODO - Update the 'add client' functionality to create a Google Group for granting permissions to folders/docs.
+// TODO - Update the 'add client' functionality to assign Google Groups (agency, client, writers) to folders permissions lists. 
+
+// TODO - Incorporate OpenAI API functionality into the process. 
+// TODO - Create a 'new client setup wizard' process that walks the user through the setup process for adding client overview info, socials, products, documents, etc. (AI assistant should provide a default option to make setup quicker.)
+
+
 export default function AppletAddNewClient() {
 	const { setClients, setOpenSubMenu, setActiveSidebarSubitem, setAppletViewState, setActiveClientID } = useContext(SharedStateContext);
 

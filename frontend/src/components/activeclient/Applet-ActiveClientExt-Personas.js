@@ -6,6 +6,12 @@ import Typography from '@mui/material/Typography';
 
 import { SharedStateContext } from './../_SharedStateComponent';
 
+
+// TODO - Add ability to add personas. 
+// TODO - Add ability to edit personas. 
+// TODO - Add ability to delete personas.
+
+
 export default function AppletActiveClientPersonas() {
 
 	const { isDarkMode, currentClientPersonas } = useContext(SharedStateContext);

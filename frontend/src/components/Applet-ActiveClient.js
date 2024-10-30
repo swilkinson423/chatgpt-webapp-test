@@ -19,6 +19,10 @@ import AppletActiveClientTopics from './activeclient/Applet-ActiveClientExt-Topi
 import AppletActiveClientTracking from './activeclient/Applet-ActiveClientExt-Tracking';
 import AppletActiveClientSettings from './activeclient/Applet-ActiveClientExt-Settings';
 
+
+// TODO - Update the DB structure to reintegrate the socials back into the companies table, using an array of socials. 
+// TODO - Update the DB (possibly modifying the client/competitor join table) to be able to include unique, one-way information for each client/competitor relationship. (i.e., if Company A is a competitor to both Company B and Company C, but in different product categories, I need a way to give Company A 'core' information such as name, description, website, as well as 'client-specific' information so that when client B views Client A in their page, they see only info relevant to themselve, and information specific to other companies stays private. )
+
 export default function AppletViewActiveClient() {
 
 	const {

@@ -20,6 +20,13 @@ import { updateClientOverview, updateClientSocials } from '../../utils/databaseF
 
 import { SharedStateContext } from './../_SharedStateComponent';
 
+
+// TODO - Recombine the socials into the companies table as an array.
+// TODO - Add ability to add socials. 
+// TODO - Add ability to edit socials. 
+// TODO - Add ability to delete socials.
+
+
 export default function AppletActiveClientAbout() {
 
 	// Shared States
